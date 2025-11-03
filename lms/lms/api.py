@@ -25,7 +25,6 @@ from frappe.utils import (
 	get_datetime,
 	now,
 )
-from frappe.utils.response import Response
 
 from lms.lms.doctype.course_lesson.course_lesson import save_progress
 from lms.lms.utils import get_average_rating, get_lesson_count
@@ -253,7 +252,6 @@ def get_job_details(job):
 			"location",
 			"country",
 			"type",
-			"work_mode",
 			"company_name",
 			"company_logo",
 			"company_website",
@@ -280,7 +278,6 @@ def get_job_opportunities(filters=None, orFilters=None):
 			"location",
 			"country",
 			"type",
-			"work_mode",
 			"company_name",
 			"company_logo",
 			"name",
@@ -507,11 +504,12 @@ def get_sidebar_settings():
 	items = [
 		"courses",
 		"batches",
-		"certifications",
+		"certified_members",
 		"jobs",
 		"statistics",
 		"notifications",
 		"programming_exercises",
+		"batch_assignment",
 	]
 	for item in items:
 		sidebar_items[item] = lms_settings.get(item)
@@ -826,6 +824,7 @@ def get_count(doctype, filters):
 
 @frappe.whitelist()
 def get_payment_gateway_details(payment_gateway):
+	fields = []
 	gateway = frappe.get_doc("Payment Gateway", payment_gateway)
 
 	if gateway.gateway_controller is None:
@@ -845,30 +844,15 @@ def get_payment_gateway_details(payment_gateway):
 		except Exception:
 			frappe.throw(_("{0} Settings not found").format(payment_gateway))
 
-	gateway_fields = get_transformed_fields(meta, data)
-
-	return {
-		"fields": gateway_fields,
-		"data": data,
-		"doctype": doctype,
-		"docname": docname,
-	}
-
-
-def get_transformed_fields(meta, data=None):
-	transformed_fields = []
 	for row in meta:
 		if row.fieldtype not in ["Column Break", "Section Break"]:
 			if row.fieldtype in ["Attach", "Attach Image"]:
 				fieldtype = "Upload"
-				if data and data.get(row.fieldname):
-					data[row.fieldname] = get_file_info(data.get(row.fieldname))
-			elif row.fieldtype == "Check":
-				fieldtype = "checkbox"
+				data[row.fieldname] = get_file_info(data.get(row.fieldname))
 			else:
 				fieldtype = row.fieldtype
 
-			transformed_fields.append(
+			fields.append(
 				{
 					"label": row.label,
 					"name": row.fieldname,
@@ -876,19 +860,12 @@ def get_transformed_fields(meta, data=None):
 				}
 			)
 
-	return transformed_fields
-
-
-@frappe.whitelist()
-def get_new_gateway_fields(doctype):
-	try:
-		meta = frappe.get_meta(doctype).fields
-	except Exception:
-		frappe.throw(_("{0} not found").format(doctype))
-
-	transformed_fields = get_transformed_fields(meta)
-
-	return transformed_fields
+	return {
+		"fields": fields,
+		"data": data,
+		"doctype": doctype,
+		"docname": docname,
+	}
 
 
 def update_course_statistics():
@@ -1217,7 +1194,7 @@ def fetch_activity_data(member, start_date):
 	lesson_completions = frappe.get_all(
 		"LMS Course Progress",
 		fields=["creation"],
-		filters={"member": member, "creation": [">=", start_date], "status": "Complete"},
+		filters={"member": member, "creation": [">=", start_date]},
 	)
 
 	quiz_submissions = frappe.get_all(
@@ -1651,24 +1628,169 @@ def get_progress_distribution(progressList):
 	return distribution
 
 
-@frappe.whitelist(allow_guest=True)
-def get_pwa_manifest():
-	title = frappe.db.get_single_value("Website Settings", "app_name") or "Frappe Learning"
-	banner_image = frappe.db.get_single_value("Website Settings", "banner_image")
+@frappe.whitelist()
+def assign_batches_to_users(users, batches, send_email=True):
+	"""Assign multiple batches to multiple users"""
+	if not users or not batches:
+		frappe.throw(_("Please provide users and batches to assign"))
+	
+	if isinstance(users, str):
+		users = frappe.parse_json(users)
+	if isinstance(batches, str):
+		batches = frappe.parse_json(batches)
+	if isinstance(send_email, str):
+		send_email = send_email.lower() in ('true', '1', 'yes')
+	
+	created_enrollments = []
+	existing_enrollments = []
+	
+	# Track seat counts for each batch to prevent over-enrollment
+	batch_seat_tracker = {}
+	
+	for user in users:
+		for batch in batches:
+			# Check if enrollment already exists
+			existing = frappe.db.exists("LMS Batch Enrollment", {
+				"member": user,
+				"batch": batch
+			})
+			
+			if existing:
+				existing_enrollments.append({
+					"user": user,
+					"batch": batch,
+					"enrollment": existing
+				})
+				continue
+			
+			# Initialize batch seat tracker if not exists
+			if batch not in batch_seat_tracker:
+				batch_doc = frappe.get_doc("LMS Batch", batch)
+				current_enrollments = frappe.db.count("LMS Batch Enrollment", {"batch": batch})
+				batch_seat_tracker[batch] = {
+					"seat_count": batch_doc.seat_count,
+					"current_enrollments": current_enrollments,
+					"assigned_in_this_request": 0
+				}
+			
+			# Check batch capacity including assignments in this request
+			batch_info = batch_seat_tracker[batch]
+			if batch_info["seat_count"]:
+				total_after_assignment = batch_info["current_enrollments"] + batch_info["assigned_in_this_request"] + 1
+				if total_after_assignment > batch_info["seat_count"]:
+					frappe.log_error(f"Batch {batch} would exceed capacity. Cannot enroll {user}")
+					continue
+			
+			# Create new batch enrollment
+			try:
+				# Get user details for enrollment
+				user_doc = frappe.get_doc("User", user)
+				
+				enrollment = frappe.get_doc({
+					"doctype": "LMS Batch Enrollment",
+					"member": user,
+					"batch": batch,
+					"member_name": user_doc.full_name or user_doc.name,
+					"member_username": user_doc.username,
+					"member_image": user_doc.user_image
+				})
+				
+				# Insert the enrollment - this will trigger:
+				# 1. Automatic course enrollment (validate_course_enrollment)
+				# 2. Email notification (send_confirmation_email) 
+				# 3. Live class addition (add_member_to_live_class)
+				enrollment.insert(ignore_permissions=True)
+				
+				# Override email sending if user disabled it
+				if not send_email:
+					frappe.db.set_value("LMS Batch Enrollment", enrollment.name, "confirmation_email_sent", 1)
+				
+				# Update seat tracker
+				batch_seat_tracker[batch]["assigned_in_this_request"] += 1
+				
+				created_enrollments.append({
+					"user": user,
+					"batch": batch,
+					"enrollment": enrollment.name,
+					"courses_enrolled": get_batch_courses(batch)
+				})
+				
+			except Exception as e:
+				frappe.log_error(f"Failed to create batch enrollment for {user} in {batch}: {str(e)}")
+				continue
+	
 
-	manifest = {
-		"name": title,
-		"short_name": title,
-		"description": "Easy to use, 100% open source Learning Management System",
-		"start_url": "/lms",
-		"icons": [
-			{
-				"src": banner_image or "/assets/lms/frontend/manifest/manifest-icon-192.maskable.png",
-				"sizes": "192x192",
-				"type": "image/png",
-				"purpose": "maskable any",
-			}
-		],
+	
+	return {
+		"created": len(created_enrollments),
+		"existing": len(existing_enrollments),
+		"created_enrollments": created_enrollments,
+		"existing_enrollments": existing_enrollments
 	}
 
-	return Response(json.dumps(manifest), status=200, content_type="application/manifest+json")
+
+def get_batch_courses(batch_name):
+	"""Get list of courses associated with a batch"""
+	courses = frappe.get_all(
+		"Batch Course", 
+		filters={"parent": batch_name}, 
+		fields=["course", "title"]
+	)
+	return [{"course": course.course, "title": course.title} for course in courses]
+
+
+@frappe.whitelist()
+def get_users_for_batch_assignment():
+	"""Get all users available for batch assignment"""
+	users = frappe.get_all(
+		"User",
+		filters={
+			"enabled": 1,
+			"name": ["not in", ["Administrator", "Guest"]]
+		},
+		fields=["name", "full_name", "email", "role_profile_name"],
+		order_by="full_name",
+		limit_page_length=0  # Load all users
+	)
+	return users
+
+
+@frappe.whitelist()
+def get_role_profiles():
+	"""Get all available role profiles"""
+	role_profiles = frappe.get_all(
+		"Role Profile",
+		fields=["name"],
+		order_by="name",
+		limit_page_length=0
+	)
+	return [profile.name for profile in role_profiles]
+
+
+@frappe.whitelist()
+def get_batches_for_assignment():
+	"""Get all available batches with current enrollment counts"""
+	batches = frappe.get_all(
+		"LMS Batch",
+		filters={
+			"published": 1
+		},
+		fields=["name", "title", "description", "seat_count"],
+		order_by="title",
+		limit_page_length=0  # Load all batches
+	)
+	
+	# Add current enrollment count for each batch
+	for batch in batches:
+		batch.enrolled_count = frappe.db.count("LMS Batch Enrollment", {"batch": batch.name})
+		if batch.seat_count:
+			batch.available_seats = batch.seat_count - batch.enrolled_count
+		else:
+			batch.available_seats = "Unlimited"
+	
+	return batches
+
+
+
+
+

@@ -9,12 +9,12 @@
 		>
 			<UserDropdown :isCollapsed="sidebarStore.isSidebarCollapsed" />
 			<div class="flex flex-col" v-if="sidebarSettings.data">
-				<div v-for="link in sidebarLinks" class="mx-2 my-0.5">
-					<SidebarLink
-						:link="link"
-						:isCollapsed="sidebarStore.isSidebarCollapsed"
-					/>
-				</div>
+				<SidebarLink
+					v-for="link in sidebarLinks"
+					:link="link"
+					:isCollapsed="sidebarStore.isSidebarCollapsed"
+					class="mx-2 my-0.5"
+				/>
 			</div>
 			<div
 				v-if="sidebarSettings.data?.web_pages?.length || isModerator"
@@ -54,18 +54,15 @@
 					class="flex flex-col transition-all duration-300 ease-in-out"
 					:class="!sidebarStore.isWebpagesCollapsed ? 'block' : 'hidden'"
 				>
-					<div
+					<SidebarLink
 						v-for="link in sidebarSettings.data.web_pages"
+						:link="link"
+						:isCollapsed="sidebarStore.isSidebarCollapsed"
 						class="mx-2 my-0.5"
-					>
-						<SidebarLink
-							:link="link"
-							:isCollapsed="sidebarStore.isSidebarCollapsed"
-							:showControls="isModerator ? true : false"
-							@openModal="openPageModal"
-							@deletePage="deletePage"
-						/>
-					</div>
+						:showControls="isModerator ? true : false"
+						@openModal="openPageModal"
+						@deletePage="deletePage"
+					/>
 				</div>
 			</div>
 		</div>
@@ -348,6 +345,19 @@ const addAssignments = () => {
 	}
 }
 
+const addBatchAssignment = () => {
+	if (isInstructor.value || isModerator.value) {
+		sidebarLinks.value.splice(6, 0, {
+			label: 'Batch Assignment',
+			icon: 'UserPlus',
+			to: 'BatchAssignment',
+			activeFor: [
+				'BatchAssignment',
+			],
+		})
+	}
+}
+
 const addProgrammingExercises = () => {
 	if (isInstructor.value || isModerator.value) {
 		sidebarLinks.value.splice(3, 0, {
@@ -376,18 +386,6 @@ const addPrograms = async () => {
 		to: 'Programs',
 		activeFor: activeFor,
 	})
-}
-
-const addContactUsDetails = () => {
-	if (settingsStore.contactUsEmail?.data || settingsStore.contactUsURL?.data) {
-		sidebarLinks.value.push({
-			label: 'Contact Us',
-			icon: settingsStore.contactUsURL?.data ? 'Headset' : 'Mail',
-			to: settingsStore.contactUsURL?.data
-				? settingsStore.contactUsURL.data
-				: settingsStore.contactUsEmail?.data,
-		})
-	}
 }
 
 const checkIfCanAddProgram = async () => {
@@ -610,11 +608,6 @@ const articles = ref([
 		],
 	},
 	{
-		title: __('Learning Paths'),
-		opened: false,
-		subArticles: [{ name: 'add-a-program', title: __('Add a program') }],
-	},
-	{
 		title: __('Assessments'),
 		opened: false,
 		subArticles: [
@@ -660,7 +653,6 @@ const setUpOnboarding = () => {
 }
 
 watch(userResource, () => {
-	addContactUsDetails()
 	if (userResource.data) {
 		isModerator.value = userResource.data.is_moderator
 		isInstructor.value = userResource.data.is_instructor
@@ -669,6 +661,7 @@ watch(userResource, () => {
 		addProgrammingExercises()
 		addQuizzes()
 		addAssignments()
+		addBatchAssignment()
 		setUpOnboarding()
 	}
 })
