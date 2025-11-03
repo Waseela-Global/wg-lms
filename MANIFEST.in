@@ -4,15 +4,15 @@ include *.json
 include *.md
 include *.py
 include *.txt
-recursive-include lms *.css
-recursive-include lms *.csv
-recursive-include lms *.html
-recursive-include lms *.ico
-recursive-include lms *.js
-recursive-include lms *.json
-recursive-include lms *.md
-recursive-include lms *.png
-recursive-include lms *.py
-recursive-include lms *.svg
-recursive-include lms *.txt
-recursive-exclude lms *.pyc
+recursive-include wg_lms *.css
+recursive-include wg_lms *.csv
+recursive-include wg_lms *.html
+recursive-include wg_lms *.ico
+recursive-include wg_lms *.js
+recursive-include wg_lms *.json
+recursive-include wg_lms *.md
+recursive-include wg_lms *.png
+recursive-include wg_lms *.py
+recursive-include wg_lms *.svg
+recursive-include wg_lms *.txt
+recursive-exclude wg_lms *.pyc
