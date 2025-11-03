@@ -3,15 +3,15 @@ from setuptools import find_packages, setup
 with open("requirements.txt") as f:
 	install_requires = f.read().strip().split("\n")
 
-# get version from __version__ variable in lms/__init__.py
-from lms import __version__ as version
+# get version from __version__ variable in wg_lms/__init__.py
+from wg_lms import __version__ as version
 
 setup(
-	name="lms",
+	name="wg_lms",
 	version=version,
-	description="Learning Management System",
-	author="Jannat",
-	author_email="jannat@frappe.io",
+	description="Waseela LMS",
+	author="Hapy Co.",
+	author_email="admin@hapy.co",
 	packages=find_packages(),
 	zip_safe=False,
 	include_package_data=True,

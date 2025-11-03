@@ -1,9 +1,9 @@
 [project]
-name = "lms"
+name = "wg_lms"
 authors = [
-    { name = "Frappe Technologies Pvt Ltd", email = "developers@frappe.io"}
+    { name = "Hapy Co.", email = "admin@hapy.co"}
 ]
-description = "Easy to use, open source, Learning Management System"
+description = "Waseela LMS"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
