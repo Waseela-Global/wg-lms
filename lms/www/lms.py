@@ -204,6 +204,13 @@ def get_meta_from_document(app_path):
 			"link": "/statistics",
 		}
 
+	if app_path == "batch-assignment":
+		return {
+			"title": _("Batch Assignment"),
+			"keywords": "Batch Assignment, User Assignment, Batch Management",
+			"link": "/lms/batch-assignment",
+		}
+
 	if re.match(r"^user/.*$", app_path):
 		username = app_path.split("/")[1]
 		user = frappe.db.get_value(
