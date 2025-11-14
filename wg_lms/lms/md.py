@@ -13,7 +13,6 @@ that macro. The function will get the argument passed to the macro
 as argument.
 """
 
-import html as HTML
 import re
 import xml.etree.ElementTree as etree
 

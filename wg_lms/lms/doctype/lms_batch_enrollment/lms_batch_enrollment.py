@@ -1,11 +1,8 @@
-# Copyright (c) 2025, Frappe and contributors
+# Copyright (c) 2021, FOSS United and contributors
 # For license information, please see license.txt
-
-import json
 
 import frappe
 from frappe import _
-from frappe.email.doctype.email_template.email_template import get_email_template
 from frappe.model.document import Document
 
 
@@ -41,58 +38,23 @@ class LMSBatchEnrollment(Document):
 @frappe.whitelist()
 def send_confirmation_email(doc):
 	if isinstance(doc, str):
-		doc = frappe._dict(json.loads(doc))
+		doc = frappe.get_doc("LMS Batch Enrollment", doc)
 
-	if not doc.confirmation_email_sent:
-		outgoing_email_account = frappe.get_cached_value(
-			"Email Account", {"default_outgoing": 1, "enable_outgoing": 1}, "name"
-		)
-		if not doc.confirmation_email_sent and (outgoing_email_account or frappe.conf.get("mail_login")):
-			send_mail(doc)
-			frappe.db.set_value(doc.doctype, doc.name, "confirmation_email_sent", 1)
+	batch_title = frappe.db.get_value("LMS Batch", doc.batch, "title")
+	member_name = frappe.db.get_value("User", doc.member, "full_name") or doc.member
 
-
-def send_mail(doc):
-	batch = frappe.db.get_value(
-		"LMS Batch",
-		doc.batch,
-		[
-			"name",
-			"title",
-			"start_date",
-			"start_time",
-			"medium",
-			"confirmation_email_template",
-		],
-		as_dict=1,
-	)
-
-	subject = _("Enrollment Confirmation for {0}").format(batch.title)
-	template = "batch_confirmation"
-	custom_template = batch.confirmation_email_template or frappe.db.get_single_value(
-		"LMS Settings", "batch_confirmation_template"
-	)
-
+	template = "batch_enrollment_confirmation"
 	args = {
-		"title": batch.title,
-		"student_name": doc.member_name,
-		"start_time": batch.start_time,
-		"start_date": batch.start_date,
-		"medium": batch.medium,
-		"name": batch.name,
+		"member_name": member_name,
+		"batch_title": batch_title,
+		"batch_name": doc.batch,
 	}
-
-	if custom_template:
-		email_template = get_email_template(custom_template, args)
-		subject = email_template.get("subject")
-		content = email_template.get("message")
 
 	frappe.sendmail(
 		recipients=doc.member,
-		subject=subject,
-		template=template if not custom_template else None,
-		content=content if custom_template else None,
+		subject=_("Enrollment Confirmation for {0}").format(batch_title),
+		template=template,
 		args=args,
-		header=[_(batch.title), "green"],
-		retry=3,
+		header=[_("Batch Enrollment Confirmation"), "green"],
 	)
+

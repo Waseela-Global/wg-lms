@@ -1,9 +1,6 @@
 """API methods for the LMS."""
 
 import json
-import os
-import re
-import shutil
 
 import frappe
 from frappe import _
@@ -1254,7 +1251,6 @@ def get_certification_details(course):
 			as_dict=1,
 		)
 
-	paid_certificate = frappe.db.get_value("LMS Course", course, "paid_certificate")
 	certificate = frappe.db.get_value(
 		"LMS Certificate",
 		{"member": frappe.session.user, "course": course},
@@ -1264,7 +1260,6 @@ def get_certification_details(course):
 
 	return {
 		"membership": membership,
-		"paid_certificate": paid_certificate,
 		"certificate": certificate,
 	}
 
@@ -1564,7 +1559,7 @@ def get_pwa_manifest():
 		"start_url": "/lms",
 		"icons": [
 			{
-				"src": banner_image or "/assets/lms/frontend/manifest/manifest-icon-192.maskable.png",
+				"src": banner_image or "/assets/wg_lms/frontend/manifest/manifest-icon-192.maskable.png",
 				"sizes": "192x192",
 				"type": "image/png",
 				"purpose": "maskable any",

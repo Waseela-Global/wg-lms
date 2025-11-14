@@ -3,6 +3,7 @@ import json
 import re
 import string
 from datetime import timedelta
+from functools import lru_cache
 
 import frappe
 import requests
@@ -28,6 +29,12 @@ from frappe.utils import (
 )
 
 from wg_lms.lms.md import find_macros, markdown_to_html
+
+
+@lru_cache(maxsize=None)
+def doctype_exists(doctype: str) -> bool:
+	"""Return True if the given DocType is available in the system."""
+	return bool(frappe.db.exists("DocType", doctype))
 
 RE_SLUG_NOTALLOWED = re.compile("[^a-z0-9]+")
 
@@ -442,14 +449,6 @@ def get_signup_optin_checks():
 	return (", ").join(links)
 
 
-def format_amount(amount, currency):
-	amount_reduced = amount / 1000
-	if amount_reduced < 1:
-		return fmt_money(amount, 0, currency)
-	precision = 0 if amount % 1000 == 0 else 1
-	return _("{0}k").format(fmt_money(amount_reduced, precision, currency))
-
-
 def format_number(number):
 	number_reduced = number / 1000
 	if number_reduced < 1:
@@ -538,9 +537,7 @@ def get_courses_under_review():
 			"title",
 			"short_introduction",
 			"image",
-			"paid_course",
-			"course_price",
-			"currency",
+			# pricing fields removed
 			"status",
 			"published",
 		],
@@ -888,78 +885,6 @@ def get_upcoming_evals(courses=None, batch=None):
 	return upcoming_evals
 
 
-def check_multicurrency(amount, currency, country=None, amount_usd=None):
-	settings = frappe.get_single("LMS Settings")
-	show_usd_equivalent = settings.show_usd_equivalent
-
-	# Countries for which currency should not be converted
-	exception_country = settings.exception_country
-	exception_country = [country.country for country in exception_country]
-
-	# Get users country
-	if not country:
-		country = frappe.db.get_value("Address", {"email_id": frappe.session.user}, "country")
-
-	if not country:
-		country = frappe.db.get_value("User", frappe.session.user, "country")
-
-	if not country:
-		country = get_country_code()
-
-	# If the country is the one for which conversion is not needed then return as is
-	if not country or (exception_country and country in exception_country):
-		return amount, currency
-
-	# If conversion is disabled from settings or the currency is already USD then return as is
-	if not show_usd_equivalent or currency == "USD":
-		return amount, currency
-
-	# If Explicit USD price is given then return that without conversion
-	if amount_usd and country and country not in exception_country:
-		return amount_usd, "USD"
-
-	# Conversion logic starts here. Exchange rate is fetched and amount is converted.
-	exchange_rate = get_current_exchange_rate(currency, "USD")
-	amount = flt(amount * exchange_rate, 2)
-	currency = "USD"
-
-	# Check if the amount should be rounded and then apply rounding
-	apply_rounding = settings.apply_rounding
-	if apply_rounding and amount % 100 != 0:
-		amount = amount + 100 - amount % 100
-
-	return ceil(amount), currency
-
-
-def apply_gst(amount, country=None):
-	gst_applied = 0
-	apply_gst = frappe.db.get_single_value("LMS Settings", "apply_gst")
-
-	if not country:
-		country = frappe.db.get_value("User", frappe.session.user, "country")
-
-	if apply_gst and country == "India":
-		gst_applied = amount * 0.18
-		amount += gst_applied
-
-	return amount, gst_applied
-
-
-def get_current_exchange_rate(source, target="USD"):
-	url = f"https://api.frankfurter.app/latest?from={source}&to={target}"
-
-	response = requests.request("GET", url)
-	details = response.json()
-	return details["rates"][target]
-
-
-@frappe.whitelist()
-def change_currency(amount, currency, country=None):
-	amount = cint(amount)
-	amount, currency = check_multicurrency(amount, currency, country)
-	return fmt_money(amount, 0, currency)
-
-
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=50, seconds=60 * 60)
 def get_courses(filters=None, start=0):
@@ -992,12 +917,6 @@ def get_courses(filters=None, start=0):
 def get_course_card_details(courses):
 	for course in courses:
 		course.instructors = get_instructors("LMS Course", course.name)
-
-		if course.paid_course and course.published == 1:
-			course.amount, course.currency = check_multicurrency(
-				course.course_price, course.currency, None, course.amount_usd
-			)
-			course.price = fmt_money(course.amount, 0, course.currency)
 
 	return courses
 
@@ -1038,7 +957,6 @@ def update_course_filters(filters):
 
 	if filters.get("certification"):
 		or_filters.update({"enable_certification": 1})
-		or_filters.update({"paid_certificate": 1})
 		del filters["certification"]
 
 	return filters, or_filters, show_featured
@@ -1089,11 +1007,6 @@ def get_course_fields():
 		"published_on",
 		"category",
 		"status",
-		"paid_course",
-		"paid_certificate",
-		"course_price",
-		"currency",
-		"amount_usd",
 		"enable_certification",
 		"lessons",
 		"enrollments",
@@ -1122,11 +1035,7 @@ def get_course_details(course):
 			"published_on",
 			"category",
 			"status",
-			"paid_course",
-			"paid_certificate",
-			"course_price",
-			"currency",
-			"amount_usd",
+			# pricing fields removed
 			"enable_certification",
 			"lessons",
 			"enrollments",
@@ -1138,11 +1047,7 @@ def get_course_details(course):
 
 	course_details.instructors = get_instructors("LMS Course", course_details.name)
 	# course_details.is_instructor = is_instructor(course_details.name)
-	if course_details.paid_course or course_details.paid_certificate:
-		"""course_details.course_price, course_details.currency = check_multicurrency(
-				course_details.course_price, course_details.currency, None, course_details.amount_usd
-		)"""
-		course_details.price = fmt_money(course_details.course_price, 0, course_details.currency)
+	# pricing block removed
 
 	if frappe.session.user == "Guest":
 		course_details.membership = None
@@ -1249,7 +1154,7 @@ def get_lesson(course, chapter, lesson):
 	course_info = frappe.db.get_value(
 		"LMS Course",
 		course,
-		["title", "paid_certificate", "disable_self_learning"],
+		["title", "disable_self_learning"],
 		as_dict=1,
 	)
 
@@ -1301,7 +1206,6 @@ def get_lesson(course, chapter, lesson):
 	lesson_details.icon = get_lesson_icon(lesson_details.body, lesson_details.content)
 	lesson_details.instructors = get_instructors("LMS Course", course)
 	lesson_details.course_title = course_info.title
-	lesson_details.paid_certificate = course_info.paid_certificate
 	lesson_details.disable_self_learning = course_info.disable_self_learning
 	lesson_details.videos = get_video_details(lesson_name)
 	return lesson_details
@@ -1338,7 +1242,13 @@ def get_neighbour_lesson(course, chapter, lesson):
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=50, seconds=60 * 60)
 def get_batch_details(batch):
-	batch_students = frappe.get_all("LMS Batch Enrollment", {"batch": batch}, pluck="member")
+	if not doctype_exists("LMS Batch"):
+		return {}
+
+	batch_students = []
+	if doctype_exists("LMS Batch Enrollment"):
+		batch_students = frappe.get_all("LMS Batch Enrollment", {"batch": batch}, pluck="member")
+
 	if (
 		not frappe.db.get_value("LMS Batch", batch, "published")
 		and has_student_role()
@@ -1361,10 +1271,6 @@ def get_batch_details(batch):
 			"end_time",
 			"seat_count",
 			"published",
-			"amount",
-			"amount_usd",
-			"currency",
-			"paid_batch",
 			"evaluation_end_date",
 			"allow_self_enrollment",
 			"certification",
@@ -1385,16 +1291,12 @@ def get_batch_details(batch):
 	):
 		batch_details.accept_enrollments = True
 
-	batch_details.courses = frappe.get_all(
-		"Batch Course", filters={"parent": batch}, fields=["course", "title", "evaluator"]
-	)
-	batch_details.students = batch_students
-
-	if batch_details.paid_batch and batch_details.start_date >= getdate():
-		batch_details.amount, batch_details.currency = check_multicurrency(
-			batch_details.amount, batch_details.currency, None, batch_details.amount_usd
+	batch_details.courses = []
+	if doctype_exists("Batch Course"):
+		batch_details.courses = frappe.get_all(
+			"Batch Course", filters={"parent": batch}, fields=["course", "title", "evaluator"]
 		)
-		batch_details.price = fmt_money(batch_details.amount, 0, batch_details.currency)
+	batch_details.students = batch_students
 
 	if batch_details.seat_count:
 		batch_details.seats_left = batch_details.seat_count - len(batch_details.students)
@@ -1472,6 +1374,9 @@ def get_batch_courses(batch):
 
 @frappe.whitelist()
 def get_assessments(batch, member=None):
+	if not doctype_exists("LMS Assessment"):
+		return []
+
 	if not member:
 		member = frappe.session.user
 
@@ -1753,48 +1658,8 @@ def get_discussion_replies(topic):
 
 @frappe.whitelist()
 def get_order_summary(doctype, docname, country=None):
-	if doctype == "LMS Course":
-		details = frappe.db.get_value(
-			"LMS Course",
-			docname,
-			[
-				"title",
-				"name",
-				"paid_course",
-				"paid_certificate",
-				"course_price as amount",
-				"currency",
-				"amount_usd",
-			],
-			as_dict=True,
-		)
-
-		if not details.paid_course and not details.paid_certificate:
-			raise frappe.throw(_("This course is free."))
-
-	else:
-		details = frappe.db.get_value(
-			"LMS Batch",
-			docname,
-			["title", "name", "paid_batch", "amount", "currency", "amount_usd"],
-			as_dict=True,
-		)
-
-		if not details.paid_batch:
-			raise frappe.throw(_("To join this batch, please contact the Administrator."))
-
-	details.amount, details.currency = check_multicurrency(
-		details.amount, details.currency, country, details.amount_usd
-	)
-	details.original_amount = details.amount
-	details.original_amount_formatted = fmt_money(details.amount, 0, details.currency)
-
-	if details.currency == "INR":
-		details.amount, details.gst_applied = apply_gst(details.amount, country)
-		details.gst_amount_formatted = fmt_money(details.gst_applied, 0, details.currency)
-
-	details.total_amount_formatted = fmt_money(details.amount, 0, details.currency)
-	return details
+	# Pricing/order summary no longer supported
+	return {}
 
 
 @frappe.whitelist()
@@ -1937,6 +1802,8 @@ def get_program_details(program_name):
 def enroll_in_program(program):
 	if frappe.session.user == "Guest":
 		frappe.throw(_("Please login to enroll in the program."))
+	if not doctype_exists("LMS Program Member"):
+		return
 	if not frappe.db.exists("LMS Program Member", {"parent": program, "member": frappe.session.user}):
 		program_member = frappe.new_doc("LMS Program Member")
 		program_member.update(
@@ -1956,10 +1823,15 @@ def get_batches(filters=None, start=0, order_by="start_date"):
 	if not filters:
 		filters = {}
 
+	if not doctype_exists("LMS Batch"):
+		return []
+
 	if filters.get("enrolled"):
-		enrolled_batches = frappe.get_all(
-			"LMS Batch Enrollment", {"member": frappe.session.user}, pluck="batch"
-		)
+		enrolled_batches = []
+		if doctype_exists("LMS Batch Enrollment"):
+			enrolled_batches = frappe.get_all(
+				"LMS Batch Enrollment", {"member": frappe.session.user}, pluck="batch"
+			)
 		filters.update({"name": ["in", enrolled_batches]})
 		del filters["enrolled"]
 
@@ -1971,10 +1843,6 @@ def get_batches(filters=None, start=0, order_by="start_date"):
 			"title",
 			"description",
 			"seat_count",
-			"paid_batch",
-			"amount",
-			"amount_usd",
-			"currency",
 			"start_date",
 			"end_date",
 			"start_time",
@@ -2028,16 +1896,13 @@ def get_batch_type(filters):
 def get_batch_card_details(batches):
 	for batch in batches:
 		batch.instructors = get_instructors("LMS Batch", batch.name)
-		students_count = frappe.db.count("LMS Batch Enrollment", {"batch": batch.name})
+		if doctype_exists("LMS Batch Enrollment"):
+			students_count = frappe.db.count("LMS Batch Enrollment", {"batch": batch.name})
+		else:
+			students_count = 0
 
 		if batch.seat_count:
 			batch.seats_left = batch.seat_count - students_count
-
-		if batch.paid_batch and batch.start_date >= getdate():
-			batch.amount, batch.currency = check_multicurrency(
-				batch.amount, batch.currency, None, batch.amount_usd
-			)
-			batch.price = fmt_money(batch.amount, 0, batch.currency)
 
 	return batches
 
@@ -2100,6 +1965,9 @@ def get_my_courses():
 
 
 def get_my_latest_courses():
+	if not doctype_exists("LMS Enrollment"):
+		return []
+
 	return frappe.get_all(
 		"LMS Enrollment",
 		{
@@ -2112,6 +1980,9 @@ def get_my_latest_courses():
 
 
 def get_featured_home_courses():
+	if not doctype_exists("LMS Course"):
+		return []
+
 	return frappe.get_all(
 		"LMS Course",
 		{"published": 1, "featured": 1},
@@ -2122,6 +1993,9 @@ def get_featured_home_courses():
 
 
 def get_popular_courses():
+	if not doctype_exists("LMS Course"):
+		return []
+
 	return frappe.get_all(
 		"LMS Course",
 		{
@@ -2153,6 +2027,9 @@ def get_my_batches():
 
 
 def get_my_latest_batches():
+	if not doctype_exists("LMS Batch Enrollment"):
+		return []
+
 	return frappe.get_all(
 		"LMS Batch Enrollment",
 		{
@@ -2165,6 +2042,9 @@ def get_my_latest_batches():
 
 
 def get_upcoming_batches():
+	if not doctype_exists("LMS Batch"):
+		return []
+
 	return frappe.get_all(
 		"LMS Batch",
 		{
@@ -2181,6 +2061,11 @@ def get_upcoming_batches():
 def get_my_live_classes():
 	my_live_classes = []
 	if frappe.session.user == "Guest":
+		return my_live_classes
+
+	if not (
+		doctype_exists("LMS Batch Enrollment") and doctype_exists("LMS Live Class")
+	):
 		return my_live_classes
 
 	batches = frappe.get_all(
@@ -2356,6 +2241,9 @@ def fetch_activity_dates(user):
 
 	all_dates = []
 	for dt in doctypes:
+		if not doctype_exists(dt):
+			continue
+
 		all_dates.extend(frappe.get_all(dt, {"member": user}, pluck="creation"))
 
 	return sorted({d.date() if hasattr(d, "date") else d for d in all_dates})
@@ -2401,7 +2289,7 @@ def calculate_current_streak(all_dates, streak):
 	return 0
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_streak_info():
 	if frappe.session.user == "Guest":
 		return {}

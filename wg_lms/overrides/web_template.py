@@ -1,5 +1,3 @@
-import json
-
 import frappe
 from frappe.website.doctype.web_template.web_template import WebTemplate
 

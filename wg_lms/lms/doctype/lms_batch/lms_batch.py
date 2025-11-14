@@ -1,15 +1,12 @@
 # Copyright (c) 2022, Frappe and contributors
 # For license information, please see license.txt
 
-import base64
-import json
 from datetime import timedelta
 
 import frappe
-import requests
 from frappe import _
 from frappe.model.document import Document
-from frappe.utils import add_days, cint, format_datetime, get_time, nowdate
+from frappe.utils import add_days, cint, get_time, nowdate
 
 from wg_lms.lms.utils import (
 	generate_slug,
@@ -17,7 +14,6 @@ from wg_lms.lms.utils import (
 	get_lesson_index,
 	get_lesson_url,
 	get_quiz_details,
-	update_payment_record,
 )
 
 
@@ -27,8 +23,6 @@ class LMSBatch(Document):
 		self.validate_batch_end_date()
 		self.validate_batch_time()
 		self.validate_duplicate_courses()
-		self.validate_payments_app()
-		self.validate_amount_and_currency()
 		self.validate_duplicate_assessments()
 		self.validate_membership()
 		self.validate_timetable()
@@ -54,20 +48,6 @@ class LMSBatch(Document):
 			title = frappe.db.get_value("LMS Course", next(iter(duplicates)), "title")
 			frappe.throw(_("Course {0} has already been added to this batch.").format(frappe.bold(title)))
 
-	def validate_payments_app(self):
-		if self.paid_batch:
-			installed_apps = frappe.get_installed_apps()
-			if "payments" not in installed_apps:
-				documentation_link = "https://docs.frappe.io/learning/setting-up-payment-gateway"
-				frappe.throw(
-					_(
-						"Please install the Payments App to create a paid batch. Refer to the documentation for more details. {0}"
-					).format(documentation_link)
-				)
-
-	def validate_amount_and_currency(self):
-		if self.paid_batch and (not self.amount or not self.currency):
-			frappe.throw(_("Amount and currency are required for paid batches."))
 
 	def validate_duplicate_assessments(self):
 		assessments = [row.assessment_name for row in self.assessment]
@@ -129,131 +109,6 @@ class LMSBatch(Document):
 			if schedule.date < self.start_date or schedule.date > self.end_date:
 				frappe.throw(_("Row #{0} Date cannot be outside the batch duration.").format(schedule.idx))
 
-	def on_payment_authorized(self, payment_status):
-		if payment_status in ["Authorized", "Completed"]:
-			update_payment_record("LMS Batch", self.name)
-
-
-@frappe.whitelist()
-def create_live_class(
-	batch_name,
-	zoom_account,
-	title,
-	duration,
-	date,
-	time,
-	timezone,
-	auto_recording,
-	description=None,
-):
-	payload = {
-		"topic": title,
-		"start_time": format_datetime(f"{date} {time}", "yyyy-MM-ddTHH:mm:ssZ"),
-		"duration": duration,
-		"agenda": description,
-		"private_meeting": True,
-		"auto_recording": "none" if auto_recording == "No Recording" else auto_recording.lower(),
-		"timezone": timezone,
-	}
-	headers = {
-		"Authorization": "Bearer " + authenticate(zoom_account),
-		"content-type": "application/json",
-	}
-	response = requests.post(
-		"https://api.zoom.us/v2/users/me/meetings", headers=headers, data=json.dumps(payload)
-	)
-
-	if response.status_code == 201:
-		data = json.loads(response.text)
-		payload.update(
-			{
-				"doctype": "LMS Live Class",
-				"start_url": data.get("start_url"),
-				"join_url": data.get("join_url"),
-				"meeting_id": data.get("id"),
-				"uuid": data.get("uuid"),
-				"title": title,
-				"host": frappe.session.user,
-				"date": date,
-				"time": time,
-				"batch_name": batch_name,
-				"password": data.get("password"),
-				"description": description,
-				"auto_recording": auto_recording,
-				"zoom_account": zoom_account,
-			}
-		)
-		class_details = frappe.get_doc(payload)
-		class_details.save()
-		return class_details
-	else:
-		frappe.throw(_("Error creating live class. Please try again. {0}").format(response.text))
-
-
-def authenticate(zoom_account):
-	zoom = frappe.get_doc("LMS Zoom Settings", zoom_account)
-	if not zoom.enabled:
-		frappe.throw(_("Please enable the zoom account to use this feature."))
-
-	authenticate_url = (
-		f"https://zoom.us/oauth/token?grant_type=account_credentials&account_id={zoom.account_id}"
-	)
-
-	headers = {
-		"Authorization": "Basic "
-		+ base64.b64encode(
-			bytes(
-				zoom.client_id + ":" + zoom.get_password(fieldname="client_secret", raise_exception=False),
-				encoding="utf8",
-			)
-		).decode()
-	}
-	response = requests.request("POST", authenticate_url, headers=headers)
-	return response.json()["access_token"]
-
-
-@frappe.whitelist()
-def get_batch_timetable(batch):
-	timetable = frappe.get_all(
-		"LMS Batch Timetable",
-		filters={"parent": batch},
-		fields=[
-			"reference_doctype",
-			"reference_docname",
-			"date",
-			"start_time",
-			"end_time",
-			"milestone",
-			"name",
-			"idx",
-			"parent",
-		],
-		order_by="date",
-	)
-
-	show_live_class = frappe.db.get_value("LMS Batch", batch, "show_live_class")
-	if show_live_class:
-		live_classes = get_live_classes(batch)
-		timetable.extend(live_classes)
-
-	timetable = get_timetable_details(timetable)
-	return timetable
-
-
-def get_live_classes(batch):
-	live_classes = frappe.get_all(
-		"LMS Live Class",
-		{"batch_name": batch},
-		["name", "title", "date", "time as start_time", "duration", "join_url as url"],
-		order_by="date",
-	)
-	for class_ in live_classes:
-		class_.end_time = class_.start_time + timedelta(minutes=class_.duration)
-		class_.reference_doctype = "LMS Live Class"
-		class_.reference_docname = class_.name
-		class_.icon = "icon-call"
-
-	return live_classes
 
 
 def get_timetable_details(timetable):

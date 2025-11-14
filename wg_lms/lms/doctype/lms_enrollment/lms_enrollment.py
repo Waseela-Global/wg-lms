@@ -2,105 +2,91 @@
 # For license information, please see license.txt
 
 import frappe
-from frappe import _
 from frappe.model.document import Document
-from frappe.utils import ceil
 
 
 class LMSEnrollment(Document):
-	def validate(self):
-		self.validate_membership_in_same_batch()
-		self.validate_membership_in_different_batch_same_course()
-
-	def on_update(self):
-		update_program_progress(self.member)
-
-	def validate_membership_in_same_batch(self):
-		filters = {"member": self.member, "course": self.course, "name": ["!=", self.name]}
-		if self.batch_old:
-			filters["batch_old"] = self.batch_old
-		previous_membership = frappe.db.get_value(
-			"LMS Enrollment", filters, fieldname=["member_type", "member"], as_dict=1
-		)
-
-		if previous_membership:
-			member_name = frappe.db.get_value("User", self.member, "full_name")
-			course_title = frappe.db.get_value("LMS Course", self.course, "title")
-			frappe.throw(
-				_("{0} is already a {1} of the course {2}").format(
-					member_name, previous_membership.member_type, course_title
-				)
-			)
-
-	def validate_membership_in_different_batch_same_course(self):
-		"""Ensures that a studnet is only part of one batch."""
-		# nothing to worry if the member is not a student
-		if self.member_type != "Student":
-			return
-
-		course = frappe.db.get_value("LMS Batch Old", self.batch_old, "course")
-		memberships = frappe.get_all(
-			"LMS Enrollment",
-			filters={
-				"member": self.member,
-				"name": ["!=", self.name],
-				"member_type": "Student",
-				"course": self.course,
-			},
-			fields=["batch_old", "member_type", "name"],
-		)
-
-		if memberships:
-			membership = memberships[0]
-			member_name = frappe.db.get_value("User", self.member, "full_name")
-			frappe.throw(
-				_("{0} is already a Student of {1} course through {2} batch").format(
-					member_name, course, membership.batch_old
-				)
-			)
+	pass
 
 
-def update_program_progress(member):
-	programs = frappe.get_all("LMS Program Member", {"member": member}, ["parent", "name"])
+@frappe.whitelist()
+def create_membership(batch=None, course=None, member=None, member_type="Student"):
+	"""Create LMS Enrollment record"""
+	if not member:
+		member = frappe.session.user
+
+	if not course and batch:
+		course = frappe.db.get_value("LMS Batch", batch, "course")
+
+	if not course:
+		frappe.throw("Course is required to create membership")
+
+	# Check if enrollment already exists
+	filters = {"member": member, "course": course}
+	if batch:
+		filters["batch"] = batch
+
+	if frappe.db.exists("LMS Enrollment", filters):
+		return frappe.db.get_value("LMS Enrollment", filters, "name")
+
+	# Create new enrollment
+	enrollment = frappe.new_doc("LMS Enrollment")
+	enrollment.member = member
+	enrollment.course = course
+	if batch:
+		enrollment.batch = batch
+	if member_type:
+		enrollment.member_type = member_type
+	enrollment.save(ignore_permissions=True)
+	return enrollment.name
+
+
+def update_program_progress(member=None):
+	"""Update progress for all programs the member is enrolled in"""
+	if not member:
+		member = frappe.session.user
+
+	# Check if DocType exists
+	if not frappe.db.exists("DocType", "LMS Program Member"):
+		return
+
+	# Get all programs the member is enrolled in
+	programs = frappe.get_all(
+		"LMS Program Member",
+		{"member": member},
+		pluck="parent"
+	)
 
 	for program in programs:
+		# Calculate program progress based on course progress
+		courses = frappe.get_all(
+			"LMS Program Course",
+			{"parent": program},
+			pluck="course",
+			order_by="idx"
+		)
+
+		if not courses:
+			continue
+
 		total_progress = 0
-		courses = frappe.get_all("LMS Program Course", {"parent": program.parent}, pluck="course")
 		for course in courses:
-			progress = frappe.db.get_value("LMS Enrollment", {"course": course, "member": member}, "progress")
-			progress = progress or 0
-			total_progress += progress
+			enrollment = frappe.db.get_value(
+				"LMS Enrollment",
+				{"member": member, "course": course},
+				"progress",
+				as_dict=True
+			)
+			if enrollment:
+				total_progress += enrollment.progress or 0
 
-		average_progress = ceil(total_progress / len(courses))
-		frappe.db.set_value("LMS Program Member", program.name, "progress", average_progress)
+		program_progress = total_progress / len(courses) if courses else 0
 
+		# Update program member progress
+		frappe.db.set_value(
+			"LMS Program Member",
+			{"parent": program, "member": member},
+			"progress",
+			program_progress
+		)
 
-@frappe.whitelist()
-def create_membership(course, batch=None, member=None, member_type="Student", role="Member"):
-	if frappe.db.get_value("LMS Course", course, "disable_self_learning"):
-		return False
-
-	enrollment = frappe.new_doc("LMS Enrollment")
-	enrollment.update(
-		{
-			"doctype": "LMS Enrollment",
-			"batch_old": batch,
-			"course": course,
-			"role": role,
-			"member_type": member_type,
-			"member": member or frappe.session.user,
-		}
-	)
-	enrollment.insert()
-	return enrollment
-
-
-@frappe.whitelist()
-def update_current_membership(batch, course, member):
-	all_memberships = frappe.get_all("LMS Enrollment", {"member": member, "course": course})
-	for membership in all_memberships:
-		frappe.db.set_value("LMS Enrollment", membership.name, "is_current", 0)
-
-	current_membership = frappe.get_all("LMS Enrollment", {"batch_old": batch, "member": member})
-	if len(current_membership):
-		frappe.db.set_value("LMS Enrollment", current_membership[0].name, "is_current", 1)

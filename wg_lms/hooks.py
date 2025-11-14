@@ -1,4 +1,4 @@
-from . import __version__ as app_version
+from . import __version__ as app_version  # noqa: F401
 
 app_name = "wg_lms"
 app_title = "Waseela LMS"
@@ -19,8 +19,7 @@ app_license = "proprietary"
 # app_include_js = "/assets/wg_lms/js/lms.js"
 
 # include js, css files in header of web template
-web_include_css = "wg_lms.bundle.css"
-# web_include_css = "/assets/wg_lms/css/lms.css"
+web_include_css = ["/assets/wg_lms/css/style.css"]
 web_include_js = []
 
 # include custom scss in every website theme (without file extension ".scss")
@@ -63,7 +62,7 @@ web_include_js = []
 after_install = "wg_lms.install.after_install"
 after_sync = "wg_lms.install.after_sync"
 before_uninstall = "wg_lms.install.before_uninstall"
-setup_wizard_requires = "assets/lms/js/setup_wizard.js"
+setup_wizard_requires = "assets/wg_lms/js/setup_wizard.js"
 
 # Desk Notifications
 # ------------------
@@ -97,9 +96,9 @@ override_doctype_class = {
 
 doc_events = {
 	"*": {
-		"on_change": [
-			"wg_lms.lms.doctype.lms_badge.lms_badge.process_badges",
-		]
+		# "on_change": [
+		# 	"wg_lms.lms.doctype.lms_badge.lms_badge.process_badges",
+		# ]
 	},
 	"Discussion Reply": {"after_insert": "wg_lms.lms.utils.handle_notifications"},
 	"Notification Log": {"on_change": "wg_lms.lms.utils.publish_notifications"},
@@ -117,9 +116,7 @@ scheduler_events = {
 		"wg_lms.lms.api.update_course_statistics",
 		"wg_lms.lms.doctype.lms_certificate_request.lms_certificate_request.mark_eval_as_completed",
 	],
-	"daily": [
-		"wg_lms.lms.doctype.lms_batch.lms_batch.send_batch_start_reminder",
-	],
+	"daily": [],
 }
 
 fixtures = ["Custom Field", "Function", "Industry", "LMS Category"]
@@ -190,7 +187,7 @@ jinja = {
 	"filters": [],
 }
 ## Specify the additional tabs to be included in the user profile page.
-## Each entry must be a subclass of lms.lms.plugins.ProfileTab
+## Each entry must be a subclass of wg_lms.lms.plugins.ProfileTab
 # profile_tabs = []
 
 ## Specify the extension to be used to control what scripts and stylesheets

@@ -1,7 +1,5 @@
 import unittest
 
-import frappe
-
 from .utils import slugify
 
 

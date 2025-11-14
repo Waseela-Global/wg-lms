@@ -2,8 +2,6 @@
 # See license.txt
 import unittest
 
-import frappe
-
 from .widgets import Widget, Widgets
 
 

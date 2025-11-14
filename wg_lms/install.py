@@ -1,5 +1,4 @@
 import frappe
-from frappe.desk.page.setup_wizard.setup_wizard import add_all_roles_to
 
 from wg_lms.lms.api import give_discussions_permission
 

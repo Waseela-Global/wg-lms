@@ -509,7 +509,7 @@ input[type=checkbox] {
 }
 
 .custom-checkbox>label>input:checked+.empty-checkbox {
-  background: url(/assets/lms/icons/tick.svg);
+  background: url(/assets/wg_lms/icons/tick.svg);
   background-repeat: no-repeat;
   background-position: center center;
 }
@@ -1046,7 +1046,7 @@ pre {
 
 .certificate-border {
 	border: 10px solid #0089FF;
-	/* border-image: url(/assets/lms/images/border.png);
+	/* border-image: url(/assets/wg_lms/images/border.png);
 	border-width: 100;
 	border-style: solid ; */
 	border-radius: 8px;
@@ -1228,13 +1228,13 @@ pre {
 }
 
 .carousel-control-prev-icon {
-  background-image: url("/assets/lms/icons/slider-arrow-left.svg");
+  background-image: url("/assets/wg_lms/icons/slider-arrow-left.svg");
   width: 40px;
   height: 40px;
 }
 
 .carousel-control-next-icon {
-  background-image: url("/assets/lms/icons/slider-arrow-right.svg");
+  background-image: url("/assets/wg_lms/icons/slider-arrow-right.svg");
   width: 40px;
   height: 40px;
 }
@@ -2017,7 +2017,7 @@ select {
 	border-radius: var(--border-radius);
 	padding: 0.15rem 0.5rem;
 	box-shadow: var(--btn-shadow);
-	background-image: url(/assets/lms/icons/down-arrow.svg);
+	background-image: url(/assets/wg_lms/icons/down-arrow.svg);
 	background-position: right 0.5rem center;
 	background-repeat: no-repeat;
 	background-size: 0.75rem;

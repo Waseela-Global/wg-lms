@@ -5,8 +5,6 @@ import unittest
 
 import frappe
 
-from .lms_course import LMSCourse
-
 
 class TestLMSCourse(unittest.TestCase):
 	def test_new_course(self):
@@ -77,7 +75,7 @@ def new_course(title, additional_filters=None):
 			"short_introduction": title,
 			"description": title,
 			"video_link": "https://youtu.be/pEbIhUySqbk",
-			"image": "/assets/lms/images/course-home.png",
+			"image": "/assets/wg_lms/images/course-home.png",
 			"instructors": [{"instructor": user}],
 		}
 
