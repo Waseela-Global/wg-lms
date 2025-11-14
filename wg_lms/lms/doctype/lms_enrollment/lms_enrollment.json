@@ -8,7 +8,6 @@
  "field_order": [
   "course",
   "progress",
-  "payment",
   "current_lesson",
   "column_break_3",
   "member",
@@ -16,7 +15,6 @@
   "member_username",
   "member_image",
   "certification_section",
-  "purchased_certificate",
   "certificate",
   "section_break_8",
   "cohort",
@@ -123,21 +121,9 @@
    "hidden": 1
   },
   {
-   "fieldname": "payment",
-   "fieldtype": "Link",
-   "label": "Payment",
-   "options": "LMS Payment"
-  },
-  {
    "fieldname": "certification_section",
    "fieldtype": "Section Break",
    "label": "Certification"
-  },
-  {
-   "default": "0",
-   "fieldname": "purchased_certificate",
-   "fieldtype": "Check",
-   "label": "Purchased Certificate"
   },
   {
    "fieldname": "certificate",

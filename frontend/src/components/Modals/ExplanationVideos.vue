@@ -32,9 +32,8 @@ const props = defineProps({
 })
 
 const file = computed(() => {
-	if (props.type == 'youtube') return '/assets/lms/frontend/Youtube.mp4'
-	if (props.type == 'quiz') return '/assets/lms/frontend/Quiz.mp4'
-	if (props.type == 'upload') return '/assets/lms/frontend/Upload.mp4'
-	if (props.type == 'remove') return '/assets/lms/frontend/Remove.mp4'
+	// Tutorial videos removed - these were help videos showing how to use features
+	// If needed, add tutorial videos to frontend/public/ and update paths
+	return null
 })
 </script>

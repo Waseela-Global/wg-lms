@@ -15,7 +15,7 @@ export default defineConfig({
 				input: {},
 			},
 			buildConfig: {
-				indexHtmlPath: '../lms/www/lms.html',
+				indexHtmlPath: '../wg_lms/www/lms.html',
 			},
 		}),
 		vue({

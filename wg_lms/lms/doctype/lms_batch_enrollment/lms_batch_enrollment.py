@@ -12,7 +12,6 @@ from frappe.model.document import Document
 class LMSBatchEnrollment(Document):
 	def after_insert(self):
 		send_confirmation_email(self)
-		self.add_member_to_live_class()
 
 	def validate(self):
 		self.validate_duplicate_members()
@@ -37,23 +36,6 @@ class LMSBatchEnrollment(Document):
 				enrollment.course = course.course
 				enrollment.member = self.member
 				enrollment.save()
-
-	def add_member_to_live_class(self):
-		live_classes = frappe.get_all("LMS Live Class", {"batch_name": self.batch}, ["name", "event"])
-
-		for live_class in live_classes:
-			if live_class.event:
-				frappe.get_doc(
-					{
-						"doctype": "Event Participants",
-						"reference_doctype": "User",
-						"reference_docname": self.member,
-						"email": self.member,
-						"parent": live_class.event,
-						"parenttype": "Event",
-						"parentfield": "event_participants",
-					}
-				).save()
 
 
 @frappe.whitelist()

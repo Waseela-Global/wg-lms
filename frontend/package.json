@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "serve": "vite preview",
-    "build": "vite build --base=/assets/lms/frontend/ && yarn copy-html-entry",
-    "copy-html-entry": "cp ../lms/public/frontend/index.html ../lms/www/lms.html"
+    "build": "vite build --base=/assets/wg_lms/frontend/ && yarn copy-html-entry",
+    "copy-html-entry": "cp ../wg_lms/public/frontend/index.html ../wg_lms/www/lms.html"
   },
   "dependencies": {
     "@codemirror/lang-html": "^6.4.9",

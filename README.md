@@ -1,83 +1,102 @@
-# LMS
+# Waseela LMS (wg-lms)
 
-Minimal bench setup plus the exact steps needed to get the LMS frontend running locally.
+A minimal Learning Management System built on Frappe/ERPNext, designed for corporate training and education.
+
+## Features
+
+- **Course Management**: Create and manage courses with chapters and lessons
+- **Batch Management**: Organize students into batches with schedules
+- **Progress Tracking**: Track student progress through courses
+- **Certificates**: Issue completion certificates
+- **Quizzes & Assignments**: Create interactive quizzes and assignments
+- **ERPNext Integration**: Uses ERPNext base DocTypes (Employee, Student) for user management
+
+## Removed Features
+
+This is a minimal version with the following features removed:
+- SCORM package support
+- Payment processing (Razorpay integration)
+- Zoom/Live classes
+- Job postings module
+
+All billing and payments should be handled through ERPNext's standard invoicing system.
 
 ## Quick Install (Bench)
 
 1. Create a site if needed:
-```
+```bash
 bench new-site your-site.example
 ```
+
 2. Fetch the app:
-```
+```bash
 bench get-app https://github.com/Waseela-Global/wg-lms.git
 ```
+
 3. Install the app:
+```bash
+bench --site your-site.example install-app wg_lms
 ```
-bench --site your-site.example install-app lms
-```
+
 4. Restart bench services:
-```
+```bash
 bench restart
 ```
 
 ## Local Frontend Setup
 
-Follow these steps to mirror the fully functional UI (same as the production site) on your local bench.
-
-### Bench & Site Configuration
-
-1. Make sure the site you installed on (e.g. `waseela.dev`) exists and bench is running with `bench start`.
-2. Allow the default site to answer any host so `http://localhost:8000` works:
-   - Edit `sites/common_site_config.json` and set `"serve_default_site": true`.
-   - Restart bench:
-```
-bench restart
-```
-3. If you’d rather hit the real hostname (instead of relying on `localhost`), add it to `/etc/hosts`:
-```
-bench --site waseela.dev add-to-hosts
-```
-
 ### Build the SPA Assets
 
-The LMS UI is a Vite single-page app. Any 404 on `/assets/lms/frontend/...` means the bundles are missing.
+The LMS UI is a Vite single-page app built with Frappe-UI.
 
 1. Install frontend packages:
-```
-cd apps/lms/frontend
+```bash
+cd apps/wg-lms/frontend
 yarn install
 ```
+
 2. Build and copy assets into the site:
+```bash
+cd /path/to/frappe-bench
+bench build --app wg_lms
 ```
-cd /Users/saadalikhan/Saad/Office/frappe-bench
-bench build --app lms
-```
-   - This runs `yarn build` and copies everything into `sites/assets/lms/frontend/`.
-3. After frontend changes, rerun `bench build --app lms` and `bench restart`.
+   - This runs `yarn build` and copies everything into `sites/assets/wg_lms/frontend/`.
+
+3. After frontend changes, rerun `bench build --app wg_lms` and `bench restart`.
 
 ### Verify the UI
 
-- With `serve_default_site: true`: visit `http://localhost:8000/lms/courses`
-- With host mapping: visit `http://waseela.dev:8000/lms/courses`
+- Visit `http://localhost:8000/lms/courses` (or your site URL)
 
-Hard-refresh to bust cached assets.
+## ERPNext Integration
 
-### Troubleshooting
+This LMS integrates with ERPNext base DocTypes:
+
+- **Users**: Uses ERPNext `Employee` or `Student` DocTypes
+- **Billing**: Use ERPNext `Sales Invoice` for course payments
+- **Certificates**: Can integrate with ERPNext `Certificate` DocType if needed
+
+## Troubleshooting
 
 - **404 on `/lms/courses`**
-  - Confirm `serve_default_site` is `true` *or* run `bench --site <site> add-to-hosts`.
-  - Ensure the `lms` app is installed on the site: `bench --site <site> list-apps`.
+  - Ensure the `wg_lms` app is installed: `bench --site <site> list-apps`
+  - Check site configuration
 
-- **404 on `/assets/lms/frontend/...`**
-  - Run `yarn install` in `apps/lms/frontend`.
-  - Run `bench build --app lms`.
-  - Check that `sites/assets/lms/frontend/index.html` and `.../assets/index-*.js` exist.
+- **404 on `/assets/wg_lms/frontend/...`**
+  - Run `yarn install` in `apps/wg-lms/frontend`
+  - Run `bench build --app wg_lms`
+  - Check that `sites/assets/wg_lms/frontend/index.html` exists
 
-- **Missing favicon/PWA files**
-  - These live under `apps/lms/lms/public/frontend/`; `bench build --app lms` copies them over.
+- **Permission errors**
+  - Ensure your user owns `frappe-bench/logs/` directory
 
-- **Permission errors when running bench commands**
-  - Make sure your user owns `frappe-bench/logs/` or run the command with elevated permissions when necessary.
+## Development
 
-Keep the README updated as the workflow evolves.
+This app follows Frappe app structure:
+- Python backend: `wg_lms/`
+- Frontend SPA: `frontend/`
+- DocTypes: `wg_lms/lms/doctype/`
+
+## License
+
+Proprietary - Hapy Co.
