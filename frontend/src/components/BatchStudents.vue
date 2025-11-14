@@ -215,7 +215,7 @@ const props = defineProps({
 })
 
 const students = createResource({
-	url: 'lms.lms.utils.get_batch_students',
+	url: 'wg_lms.lms.utils.get_batch_students',
 	params: {
 		batch: props.batch?.data?.name,
 	},
@@ -264,7 +264,7 @@ const openStudentProgressModal = (row) => {
 }
 
 const deleteStudents = createResource({
-	url: 'lms.lms.api.delete_documents',
+	url: 'wg_lms.lms.api.delete_documents',
 	makeParams(values) {
 		return {
 			doctype: 'LMS Batch Enrollment',

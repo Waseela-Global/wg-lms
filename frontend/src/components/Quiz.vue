@@ -465,7 +465,7 @@ watch(
 )
 
 const quizSubmission = createResource({
-	url: 'lms.lms.doctype.lms_quiz.lms_quiz.quiz_summary',
+	url: 'wg_lms.lms.doctype.lms_quiz.lms_quiz.quiz_summary',
 	makeParams(values) {
 		return {
 			quiz: quiz.data.name,
@@ -475,7 +475,7 @@ const quizSubmission = createResource({
 })
 
 const questionDetails = createResource({
-	url: 'lms.lms.utils.get_question_details',
+	url: 'wg_lms.lms.utils.get_question_details',
 	makeParams(values) {
 		return {
 			question: currentQuestion.value,
@@ -535,7 +535,7 @@ const checkAnswer = () => {
 	}
 
 	createResource({
-		url: 'lms.lms.doctype.lms_quiz.lms_quiz.check_answer',
+		url: 'wg_lms.lms.doctype.lms_quiz.lms_quiz.check_answer',
 		params: {
 			question: currentQuestion.value,
 			type: questionDetails.data.type,
@@ -664,7 +664,7 @@ const markLessonProgress = () => {
 	let lessonIndex = pathname.pop().split('-')
 
 	if (lessonIndex.length == 2) {
-		call('lms.lms.api.mark_lesson_progress', {
+		call('wg_lms.lms.api.mark_lesson_progress', {
 			course: pathname[3],
 			chapter_number: lessonIndex[0],
 			lesson_number: lessonIndex[1],

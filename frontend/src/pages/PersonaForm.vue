@@ -75,7 +75,7 @@ const submitPersona = () => {
 		role: persona.role,
 		use_case: persona.useCase,
 	}
-	call('lms.lms.api.capture_user_persona', {
+	call('wg_lms.lms.api.capture_user_persona', {
 		responses: JSON.stringify(responses),
 	}).then(() => {
 		router.push({

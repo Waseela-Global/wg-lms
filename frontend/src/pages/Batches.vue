@@ -136,7 +136,7 @@ const setFiltersFromQuery = () => {
 
 const batches = createListResource({
 	doctype: 'LMS Batch',
-	url: 'lms.lms.utils.get_batches',
+	url: 'wg_lms.lms.utils.get_batches',
 	cache: ['batches', user.data?.name],
 	pageLength: pageLength.value,
 	start: start.value,

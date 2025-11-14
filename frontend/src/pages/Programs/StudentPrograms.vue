@@ -74,7 +74,7 @@ const showEnrollmentConfirmation = ref(false)
 const enrollmentProgram = ref(null)
 
 const programs = createResource({
-	url: 'lms.lms.utils.get_programs',
+	url: 'wg_lms.lms.utils.get_programs',
 	auto: true,
 })
 

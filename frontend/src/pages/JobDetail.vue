@@ -175,7 +175,7 @@ const props = defineProps({
 })
 
 const job = createResource({
-	url: 'lms.lms.api.get_job_details',
+	url: 'wg_lms.lms.api.get_job_details',
 	params: {
 		job: props.job,
 	},

@@ -69,12 +69,6 @@
 							<div v-else-if="tab.label == 'Dashboard'">
 								<BatchStudents :batch="batch" />
 							</div>
-							<div v-else-if="tab.label == 'Classes'">
-								<LiveClass
-									:batch="batch.data.name"
-									:zoomAccount="batch.data.zoom_account"
-								/>
-							</div>
 							<div v-else-if="tab.label == 'Assessments'">
 								<Assessments :batch="batch.data.name" />
 							</div>
@@ -219,7 +213,6 @@ import {
 	Clock,
 	LayoutDashboard,
 	BookOpen,
-	Laptop,
 	BookOpenCheck,
 	Mail,
 	SendIcon,
@@ -233,7 +226,6 @@ import CourseInstructors from '@/components/CourseInstructors.vue'
 import UserAvatar from '@/components/UserAvatar.vue'
 import BatchDashboard from '@/components/BatchDashboard.vue'
 import BatchCourses from '@/components/BatchCourses.vue'
-import LiveClass from '@/components/LiveClass.vue'
 import BatchStudents from '@/components/BatchStudents.vue'
 import Assessments from '@/components/Assessments.vue'
 import Announcements from '@/components/Annoucements.vue'
@@ -263,11 +255,6 @@ const tabs = computed(() => {
 	batchTabs.push({
 		label: 'Courses',
 		icon: BookOpen,
-	})
-
-	batchTabs.push({
-		label: 'Classes',
-		icon: Laptop,
 	})
 
 	if (user.data?.is_moderator) {
@@ -308,7 +295,7 @@ onMounted(() => {
 })
 
 const batch = createResource({
-	url: 'lms.lms.utils.get_batch_details',
+	url: 'wg_lms.lms.utils.get_batch_details',
 	cache: ['batch', props.batchName],
 	params: {
 		batch: props.batchName,

@@ -117,14 +117,7 @@
 				</div>
 
 				<div class="flex items-center space-x-2">
-					<div v-if="course.paid_course" class="font-semibold">
-						{{ course.price }}
-					</div>
-
-					<Tooltip
-						v-if="course.paid_certificate || course.enable_certification"
-						:text="__('Get Certified')"
-					>
+					<Tooltip v-if="course.enable_certification" :text="__('Get Certified')">
 						<GraduationCap class="size-5 stroke-1.5 text-ink-gray-7" />
 					</Tooltip>
 				</div>

@@ -50,7 +50,7 @@ const props = defineProps({
 })
 
 const webPage = createResource({
-	url: 'lms.lms.api.update_sidebar_item',
+	url: 'wg_lms.lms.api.update_sidebar_item',
 	makeParams(values) {
 		return {
 			webpage: page.webpage,

@@ -130,14 +130,14 @@ onMounted(() => {
 
 const participants = createListResource({
 	doctype: 'LMS Certificate',
-	url: 'lms.lms.api.get_certified_participants',
+	url: 'wg_lms.lms.api.get_certified_participants',
 	start: 0,
 	cache: ['certified_participants'],
 	pageLength: 100,
 })
 
 const getMemberCount = () => {
-	call('lms.lms.api.get_count_of_certified_members', {
+	call('wg_lms.lms.api.get_count_of_certified_members', {
 		filters: filters.value,
 	}).then((data) => {
 		memberCount.value = data
@@ -146,7 +146,7 @@ const getMemberCount = () => {
 
 const categories = createListResource({
 	doctype: 'LMS Certificate',
-	url: 'lms.lms.api.get_certification_categories',
+	url: 'wg_lms.lms.api.get_certification_categories',
 	cache: ['certification_categories'],
 	auto: true,
 	transform(data) {

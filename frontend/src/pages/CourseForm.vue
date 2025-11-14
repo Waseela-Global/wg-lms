@@ -235,64 +235,14 @@
 
 					<div class="px-5 md:px-10 pb-5 space-y-5 border-b">
 						<div class="text-lg font-semibold mt-5 text-ink-gray-9">
-							{{ __('Pricing and Certification') }}
+							{{ __('Certification') }}
 						</div>
-						<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-							<FormControl
-								type="checkbox"
-								v-model="course.paid_course"
-								:label="__('Paid Course')"
-							/>
-							<FormControl
-								type="checkbox"
-								v-model="course.enable_certification"
-								:label="__('Completion Certificate')"
-							/>
-							<FormControl
-								type="checkbox"
-								v-model="course.paid_certificate"
-								:label="__('Paid Certificate')"
-							/>
-						</div>
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-							<div class="space-y-5">
-								<FormControl
-									v-if="course.paid_course || course.paid_certificate"
-									v-model="course.course_price"
-									:label="__('Amount')"
-									:required="course.paid_course || course.paid_certificate"
-								/>
-								<Link
-									v-if="course.paid_certificate"
-									doctype="Course Evaluator"
-									v-model="course.evaluator"
-									:label="__('Evaluator')"
-									:required="course.paid_certificate"
-									:onCreate="
-										(value, close) => openSettings('Evaluators', close)
-									"
-								/>
-							</div>
-							<div class="space-y-5">
-								<Link
-									v-if="course.paid_course || course.paid_certificate"
-									doctype="Currency"
-									v-model="course.currency"
-									:filters="{ enabled: 1 }"
-									:label="__('Currency')"
-									:required="course.paid_course || course.paid_certificate"
-								/>
-								<FormControl
-									v-if="course.paid_certificate"
-									v-model="course.timezone"
-									:label="__('Timezone')"
-									:required="course.paid_certificate"
-									:placeholder="__('e.g. IST, UTC, GMT...')"
-								/>
-							</div>
-						</div>
+						<FormControl
+							type="checkbox"
+							v-model="course.enable_certification"
+							:label="__('Completion Certificate')"
+						/>
 					</div>
-
 					<div class="px-5 md:px-10 pb-5 space-y-5">
 						<div class="text-lg font-semibold mt-5 text-ink-gray-9">
 							{{ __('Meta Tags') }}
@@ -394,12 +344,6 @@ const course = reactive({
 	upcoming: false,
 	disable_self_learning: false,
 	enable_certification: false,
-	paid_course: false,
-	paid_certificate: false,
-	course_price: '',
-	currency: '',
-	evaluator: '',
-	timezone: '',
 })
 
 const meta = reactive({
@@ -509,10 +453,8 @@ const courseResource = createResource({
 			'published',
 			'upcoming',
 			'disable_self_learning',
-			'paid_course',
 			'featured',
 			'enable_certification',
-			'paid_certificate',
 		]
 		for (let idx in checkboxes) {
 			let key = checkboxes[idx]
@@ -525,7 +467,7 @@ const courseResource = createResource({
 })
 
 const imageResource = createResource({
-	url: 'lms.lms.api.get_file_info',
+	url: 'wg_lms.lms.api.get_file_info',
 	makeParams(values) {
 		return {
 			file_url: values.image,
@@ -586,7 +528,7 @@ const editCourse = () => {
 }
 
 const deleteCourse = createResource({
-	url: 'lms.lms.api.delete_course',
+	url: 'wg_lms.lms.api.delete_course',
 	makeParams(values) {
 		return {
 			course: props.courseName,

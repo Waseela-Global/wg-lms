@@ -10,7 +10,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     Annoucements: typeof import('./src/components/Annoucements.vue')['default']
     AnnouncementModal: typeof import('./src/components/Modals/AnnouncementModal.vue')['default']
-    AppHeader: typeof import('./src/components/AppHeader.vue')['default']
     Apps: typeof import('./src/components/Apps.vue')['default']
     AppSidebar: typeof import('./src/components/AppSidebar.vue')['default']
     AssessmentModal: typeof import('./src/components/Modals/AssessmentModal.vue')['default']
@@ -73,13 +72,9 @@ declare module 'vue' {
     InviteIcon: typeof import('./src/components/Icons/InviteIcon.vue')['default']
     JobApplicationModal: typeof import('./src/components/Modals/JobApplicationModal.vue')['default']
     JobCard: typeof import('./src/components/JobCard.vue')['default']
-    LayoutHeader: typeof import('./src/components/LayoutHeader.vue')['default']
     LessonContent: typeof import('./src/components/LessonContent.vue')['default']
     LessonHelp: typeof import('./src/components/LessonHelp.vue')['default']
     Link: typeof import('./src/components/Controls/Link.vue')['default']
-    LiveClass: typeof import('./src/components/LiveClass.vue')['default']
-    LiveClassAttendance: typeof import('./src/components/Modals/LiveClassAttendance.vue')['default']
-    LiveClassModal: typeof import('./src/components/Modals/LiveClassModal.vue')['default']
     LMSLogo: typeof import('./src/components/Icons/LMSLogo.vue')['default']
     Members: typeof import('./src/components/Settings/Members.vue')['default']
     MobileLayout: typeof import('./src/components/MobileLayout.vue')['default']
@@ -119,7 +114,5 @@ declare module 'vue' {
     UserDropdown: typeof import('./src/components/UserDropdown.vue')['default']
     VideoBlock: typeof import('./src/components/VideoBlock.vue')['default']
     VideoStatistics: typeof import('./src/components/Modals/VideoStatistics.vue')['default']
-    ZoomAccountModal: typeof import('./src/components/Modals/ZoomAccountModal.vue')['default']
-    ZoomSettings: typeof import('./src/components/Settings/ZoomSettings.vue')['default']
   }
 }

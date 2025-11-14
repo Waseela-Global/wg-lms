@@ -394,7 +394,7 @@ const checkIfCanAddProgram = async () => {
 	if (isModerator.value || isInstructor.value) {
 		return true
 	}
-	const programs = await call('lms.lms.utils.get_programs')
+	const programs = await call('wg_lms.lms.utils.get_programs')
 	return programs.enrolled.length > 0 || programs.published.length > 0
 }
 
@@ -414,7 +414,7 @@ const openPageModal = (link) => {
 
 const deletePage = (link) => {
 	createResource({
-		url: 'lms.lms.api.delete_sidebar_item',
+		url: 'wg_lms.lms.api.delete_sidebar_item',
 		makeParams(values) {
 			return {
 				webpage: link.web_page,
@@ -449,13 +449,13 @@ const toggleWebPages = () => {
 const getFirstCourse = async () => {
 	let firstCourse = localStorage.getItem('firstCourse')
 	if (firstCourse) return firstCourse
-	return await call('lms.lms.onboarding.get_first_course')
+	return await call('wg_lms.lms.onboarding.get_first_course')
 }
 
 const getFirstBatch = async () => {
 	let firstBatch = localStorage.getItem('firstBatch')
 	if (firstBatch) return firstBatch
-	return await call('lms.lms.onboarding.get_first_batch')
+	return await call('wg_lms.lms.onboarding.get_first_batch')
 }
 
 const steps = reactive([
@@ -606,7 +606,6 @@ const articles = ref([
 		opened: false,
 		subArticles: [
 			{ name: 'create-a-batch', title: __('Create a batch') },
-			{ name: 'create-a-live-class', title: __('Create a live class') },
 		],
 	},
 	{

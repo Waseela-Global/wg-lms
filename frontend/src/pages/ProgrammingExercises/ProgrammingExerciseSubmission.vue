@@ -334,7 +334,7 @@ const createSubmission = () => {
 	if (!testCases.value.length) return
 	let codeToSave = code.value?.replace(boilerplate.value, '') || ''
 
-	call('lms.lms.api.create_programming_exercise_submission', {
+	call('wg_lms.lms.api.create_programming_exercise_submission', {
 		exercise: props.exerciseID,
 		submission: props.submissionID,
 		code: codeToSave,

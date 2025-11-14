@@ -173,7 +173,7 @@ const newSlot = reactive({
 })
 
 const evaluator = createResource({
-	url: 'lms.lms.api.get_evaluator_details',
+	url: 'wg_lms.lms.api.get_evaluator_details',
 	params: {
 		evaluator: props.profile.data?.name,
 	},

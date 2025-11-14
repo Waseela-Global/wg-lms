@@ -63,7 +63,7 @@ const props = defineProps({
 })
 
 const roles = createResource({
-	url: 'lms.lms.utils.get_roles',
+	url: 'wg_lms.lms.utils.get_roles',
 	makeParams(values) {
 		return {
 			name: values.member,
@@ -93,7 +93,7 @@ watch(
 )
 
 const updateRole = createResource({
-	url: 'lms.lms.api.save_role',
+	url: 'wg_lms.lms.api.save_role',
 	makeParams(values) {
 		return {
 			user: props.profile.data?.name,

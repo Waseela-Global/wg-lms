@@ -362,7 +362,7 @@ const openQuestionModal = (question = null) => {
 }
 
 const deleteQuestionResource = createResource({
-	url: 'lms.lms.api.delete_documents',
+	url: 'wg_lms.lms.api.delete_documents',
 	makeParams(values) {
 		return {
 			doctype: 'LMS Quiz Question',

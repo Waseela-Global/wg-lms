@@ -163,7 +163,7 @@ const getCourses = () => {
 }
 
 const slots = createResource({
-	url: 'lms.lms.doctype.course_evaluator.course_evaluator.get_schedule',
+	url: 'wg_lms.lms.doctype.course_evaluator.course_evaluator.get_schedule',
 	makeParams(values) {
 		return {
 			course: values.course,

@@ -215,7 +215,7 @@ const jobDetail = createResource({
 })
 
 const imageResource = createResource({
-	url: 'lms.lms.api.get_file_info',
+	url: 'wg_lms.lms.api.get_file_info',
 	makeParams(values) {
 		return {
 			file_url: values.image,

@@ -133,7 +133,7 @@ onMounted(() => {
 })
 
 const replies = createResource({
-	url: 'lms.lms.utils.get_discussion_replies',
+	url: 'wg_lms.lms.utils.get_discussion_replies',
 	cache: ['replies', props.topic],
 	makeParams(values) {
 		return {

@@ -25,7 +25,7 @@ let posthog: typeof window.posthog = window.posthog
 
 // Posthog Settings
 let posthogSettings = createResource({
-  url: 'lms.lms.telemetry.get_posthog_settings',
+  url: 'wg_lms.lms.telemetry.get_posthog_settings',
   cache: 'posthog_settings',
   onSuccess: (ps: PosthogSettings) => initPosthog(ps),
 })

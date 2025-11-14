@@ -6,9 +6,6 @@
 			class="rounded-t-md min-h-56 w-full"
 		/>
 		<div class="p-5">
-			<div v-if="course.data.paid_course" class="text-2xl font-semibold mb-3">
-				{{ course.data.price }}
-			</div>
 			<div v-if="!readOnlyMode">
 				<div v-if="course.data.membership" class="space-y-2">
 					<router-link
@@ -36,25 +33,6 @@
 					</router-link>
 					<CertificationLinks :courseName="course.data.name" class="w-full" />
 				</div>
-				<router-link
-					v-else-if="course.data.paid_course"
-					:to="{
-						name: 'Billing',
-						params: {
-							type: 'course',
-							name: course.data.name,
-						},
-					}"
-				>
-					<Button variant="solid" size="md" class="w-full">
-						<template #prefix>
-							<CreditCard class="size-4 stroke-1.5" />
-						</template>
-						<span>
-							{{ __('Buy this course') }}
-						</span>
-					</Button>
-				</router-link>
 				<Badge
 					v-else-if="course.data.disable_self_learning"
 					theme="blue"
@@ -156,15 +134,6 @@
 						{{ __('Certificate of Completion') }}
 					</span>
 				</div>
-				<div
-					v-if="course.data.paid_certificate"
-					class="flex items-center font-semibold text-ink-gray-9"
-				>
-					<GraduationCap class="h-4 w-4 stroke-2" />
-					<span class="ml-2">
-						{{ __('Paid Certificate after Evaluation') }}
-					</span>
-				</div>
 			</div>
 		</div>
 	</div>
@@ -179,7 +148,6 @@
 import {
 	BookOpen,
 	BookText,
-	CreditCard,
 	GraduationCap,
 	Pencil,
 	Star,
@@ -220,7 +188,7 @@ function enrollStudent() {
 			window.location.href = `/login?redirect-to=${window.location.pathname}`
 		}, 500)
 	} else {
-		call('lms.lms.doctype.lms_enrollment.lms_enrollment.create_membership', {
+		call('wg_lms.lms.doctype.lms_enrollment.lms_enrollment.create_membership', {
 			course: props.course.data.name,
 		})
 			.then(() => {
@@ -267,7 +235,7 @@ const canGetCertificate = computed(() => {
 })
 
 const certificate = createResource({
-	url: 'lms.lms.doctype.lms_certificate.lms_certificate.create_certificate',
+	url: 'wg_lms.lms.doctype.lms_certificate.lms_certificate.create_certificate',
 	makeParams(values) {
 		return {
 			course: values.course,

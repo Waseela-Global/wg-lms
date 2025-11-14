@@ -3,7 +3,7 @@ import { createResource } from 'frappe-ui'
 
 export const usersStore = defineStore('lms-users', () => {
 	let userResource = createResource({
-		url: 'lms.lms.api.get_user_info',
+		url: 'wg_lms.lms.api.get_user_info',
 		onError(error) {
 			if (error && error.exc_type === 'AuthenticationError') {
 				window.location.href = '/login'
@@ -13,7 +13,7 @@ export const usersStore = defineStore('lms-users', () => {
 	})
 
 	const allUsers = createResource({
-		url: 'lms.lms.api.get_all_users',
+		url: 'wg_lms.lms.api.get_all_users',
 		cache: ['allUsers'],
 	})
 
