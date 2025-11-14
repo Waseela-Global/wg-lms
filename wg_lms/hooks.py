@@ -116,13 +116,9 @@ scheduler_events = {
 		"wg_lms.lms.doctype.lms_certificate_request.lms_certificate_request.schedule_evals",
 		"wg_lms.lms.api.update_course_statistics",
 		"wg_lms.lms.doctype.lms_certificate_request.lms_certificate_request.mark_eval_as_completed",
-		"wg_lms.lms.doctype.lms_live_class.lms_live_class.update_attendance",
 	],
 	"daily": [
-		"wg_lms.job.doctype.job_opportunity.job_opportunity.update_job_openings",
-		"wg_lms.lms.doctype.lms_payment.lms_payment.send_payment_reminder",
 		"wg_lms.lms.doctype.lms_batch.lms_batch.send_batch_start_reminder",
-		"wg_lms.lms.doctype.lms_live_class.lms_live_class.send_live_class_reminder",
 	],
 }
 
@@ -171,12 +167,6 @@ website_redirects = [
 	{
 		"source": r"/batches/(.*)",
 		"target": "/lms/batches",
-		"match_with_query_string": True,
-	},
-	{"source": "/job-openings", "target": "/lms/job-openings"},
-	{
-		"source": r"/job-openings/(.*)",
-		"target": "/lms/job-openings",
 		"match_with_query_string": True,
 	},
 	{"source": "/statistics", "target": "/lms/statistics"},
@@ -229,9 +219,7 @@ lms_markdown_macro_renderers = {
 	"PDF": "wg_lms.plugins.pdf_renderer",
 }
 
-page_renderer = [
-	"wg_lms.page_renderers.SCORMRenderer",
-]
+page_renderer = []
 
 # set this to "/" to have profiles on the top-level
 profile_url_prefix = "/users/"

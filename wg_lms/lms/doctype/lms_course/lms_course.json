@@ -38,17 +38,7 @@
   "section_break_gglp",
   "chapters",
   "related_courses",
-  "pricing_tab",
-  "pricing_section",
-  "paid_course",
   "enable_certification",
-  "paid_certificate",
-  "column_break_acoj",
-  "section_break_vqbh",
-  "course_price",
-  "currency",
-  "amount_usd",
-  "column_break_sflq",
   "evaluator",
   "timezone",
   "tab_4_tab",
@@ -167,39 +157,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "pricing_section",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "currency",
-   "fieldtype": "Link",
-   "label": "Currency",
-   "mandatory_depends_on": "paid_course",
-   "options": "Currency"
-  },
-  {
-   "default": "0",
-   "fieldname": "paid_course",
-   "fieldtype": "Check",
-   "label": "Paid Course"
-  },
-  {
-   "fieldname": "course_price",
-   "fieldtype": "Currency",
-   "label": "Amount",
-   "mandatory_depends_on": "paid_course"
-  },
-  {
-   "fieldname": "column_break_acoj",
-   "fieldtype": "Column Break"
-  },
-  {
-   "description": "If you set an amount here, then the USD equivalent setting will not get applied.",
-   "fieldname": "amount_usd",
-   "fieldtype": "Currency",
-   "label": "Amount (USD)"
-  },
-  {
    "fieldname": "published_on",
    "fieldtype": "Date",
    "label": "Published On"
@@ -217,11 +174,6 @@
   {
    "fieldname": "section_break_gglp",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "pricing_tab",
-   "fieldtype": "Tab Break",
-   "label": "Pricing and Certification"
   },
   {
    "fieldname": "column_break_htgn",
@@ -264,13 +216,6 @@
    "read_only": 1
   },
   {
-   "default": "0",
-   "fieldname": "paid_certificate",
-   "fieldtype": "Check",
-   "label": "Paid Certificate"
-  },
-  {
-   "depends_on": "paid_certificate",
    "fieldname": "evaluator",
    "fieldtype": "Link",
    "label": "Evaluator",
@@ -283,15 +228,6 @@
    "options": "Red\nBlue\nGreen\nAmber\nCyan\nOrange\nPink\nPurple\nTeal\nViolet\nYellow\nGray"
   },
   {
-   "fieldname": "section_break_vqbh",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_sflq",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "paid_certificate",
    "fieldname": "timezone",
    "fieldtype": "Data",
    "label": "Timezone"

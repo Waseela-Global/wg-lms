@@ -32,10 +32,9 @@
 
 		<AdminHome
 			v-if="isAdmin && currentTab === 'instructor'"
-			:liveClasses="adminLiveClasses"
 			:evals="adminEvals"
 		/>
-		<StudentHome v-else :myLiveClasses="myLiveClasses" />
+		<StudentHome v-else />
 	</div>
 	<Streak v-model="showStreakModal" :streakInfo="streakInfo" />
 </template>
@@ -73,16 +72,6 @@ const isAdmin = computed(() => {
 	)
 })
 
-const myLiveClasses = createResource({
-	url: 'lms.lms.utils.get_my_live_classes',
-	auto: !isAdmin.value ? true : false,
-})
-
-const adminLiveClasses = createResource({
-	url: 'lms.lms.utils.get_admin_live_classes',
-	auto: isAdmin.value ? true : false,
-})
-
 const adminEvals = createResource({
 	url: 'lms.lms.utils.get_admin_evals',
 	auto: isAdmin.value ? true : false,
@@ -95,23 +84,9 @@ const streakInfo = createResource({
 
 const subtitle = computed(() => {
 	if (isAdmin.value) {
-		let liveClassSuffix =
-			adminLiveClasses.data?.length > 1 ? __('live classes') : __('live class')
 		let evalSuffix =
 			adminEvals.data?.length > 1 ? __('evaluations') : __('evaluation')
-		if (adminLiveClasses.data?.length > 0 && adminEvals.data?.length > 0) {
-			return __('You have {0} upcoming {1} and {2} {3} scheduled.').format(
-				adminLiveClasses.data.length,
-				liveClassSuffix,
-				adminEvals.data.length,
-				evalSuffix
-			)
-		} else if (adminLiveClasses.data?.length > 0) {
-			return __('You have {0} upcoming {1}.').format(
-				adminLiveClasses.data.length,
-				liveClassSuffix
-			)
-		} else if (adminEvals.data?.length > 0) {
+		if (adminEvals.data?.length > 0) {
 			return __('You have {0} {1} scheduled.').format(
 				adminEvals.data.length,
 				evalSuffix
@@ -119,22 +94,8 @@ const subtitle = computed(() => {
 		}
 		return __('Manage your courses and batches at a glance')
 	} else {
-		let liveClassSuffix =
-			myLiveClasses.data?.length > 1 ? __('live classes') : __('live class')
 		let evalSuffix = evalCount.value > 1 ? __('evaluations') : __('evaluation')
-		if (myLiveClasses.data?.length > 0 && evalCount.value > 0) {
-			return __('You have {0} upcoming {1} and {2} {3} scheduled.').format(
-				myLiveClasses.data.length,
-				liveClassSuffix,
-				evalCount.value,
-				evalSuffix
-			)
-		} else if (myLiveClasses.data?.length > 0) {
-			return __('You have {0} upcoming {1}.').format(
-				myLiveClasses.data.length,
-				liveClassSuffix
-			)
-		} else if (evalCount.value > 0) {
+		if (evalCount.value > 0) {
 			return __('You have {0} {1} scheduled.').format(
 				evalCount.value,
 				evalSuffix

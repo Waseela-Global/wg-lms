@@ -33,12 +33,6 @@ const routes = [
 		props: true,
 	},
 	{
-		path: '/courses/:courseName/learn/:chapterName',
-		name: 'SCORMChapter',
-		component: () => import('@/pages/SCORMChapter.vue'),
-		props: true,
-	},
-	{
 		path: '/batches',
 		name: 'Batches',
 		component: () => import('@/pages/Batches.vue'),
@@ -53,12 +47,6 @@ const routes = [
 		path: '/batches/:batchName',
 		name: 'Batch',
 		component: () => import('@/pages/Batch.vue'),
-		props: true,
-	},
-	{
-		path: '/billing/:type/:name',
-		name: 'Billing',
-		component: () => import('@/pages/Billing.vue'),
 		props: true,
 	},
 	{
@@ -102,17 +90,6 @@ const routes = [
 		],
 	},
 	{
-		path: '/job-openings',
-		name: 'Jobs',
-		component: () => import('@/pages/Jobs.vue'),
-	},
-	{
-		path: '/job-openings/:job',
-		name: 'JobDetail',
-		component: () => import('@/pages/JobDetail.vue'),
-		props: true,
-	},
-	{
 		path: '/courses/:courseName/edit',
 		name: 'CourseForm',
 		component: () => import('@/pages/CourseForm.vue'),
@@ -128,12 +105,6 @@ const routes = [
 		path: '/batches/:batchName/edit',
 		name: 'BatchForm',
 		component: () => import('@/pages/BatchForm.vue'),
-		props: true,
-	},
-	{
-		path: '/job-opening/:jobName/edit',
-		name: 'JobForm',
-		component: () => import('@/pages/JobForm.vue'),
 		props: true,
 	},
 	{

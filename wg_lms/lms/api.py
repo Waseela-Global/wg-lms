@@ -4,9 +4,6 @@ import json
 import os
 import re
 import shutil
-import xml.etree.ElementTree as ET
-import zipfile
-from xml.dom.minidom import parseString
 
 import frappe
 from frappe import _
@@ -1019,21 +1016,8 @@ def give_discussions_permission():
 
 
 @frappe.whitelist()
-def upsert_chapter(title, course, is_scorm_package, scorm_package, name=None):
-	values = frappe._dict({"title": title, "course": course, "is_scorm_package": is_scorm_package})
-
-	if is_scorm_package:
-		scorm_package = frappe._dict(scorm_package)
-		extract_path = extract_package(course, title, scorm_package)
-
-		values.update(
-			{
-				"scorm_package": scorm_package.name,
-				"scorm_package_path": extract_path.split("public")[1],
-				"manifest_file": get_manifest_file(extract_path).split("public")[1],
-				"launch_file": get_launch_file(extract_path).split("public")[1],
-			}
-		)
+def upsert_chapter(title, course, name=None):
+	values = frappe._dict({"title": title, "course": course})
 
 	if name:
 		chapter = frappe.get_doc("Course Chapter", name)
@@ -1043,77 +1027,7 @@ def upsert_chapter(title, course, is_scorm_package, scorm_package, name=None):
 	chapter.update(values)
 	chapter.save()
 
-	if is_scorm_package and not len(chapter.lessons):
-		add_lesson(title, chapter.name, course, 1)
-
 	return chapter
-
-
-def extract_package(course, title, scorm_package):
-	package = frappe.get_doc("File", scorm_package.name)
-	zip_path = package.get_full_path()
-	# check_for_malicious_code(zip_path)
-	extract_path = frappe.get_site_path("public", "scorm", course, title)
-	zipfile.ZipFile(zip_path).extractall(extract_path)
-	return extract_path
-
-
-def check_for_malicious_code(zip_path):
-	suspicious_patterns = [
-		# Unsafe inline JavaScript
-		r'on(click|load|mouseover|error|submit|focus|blur|change|keyup|keydown|keypress|resize)=".*?"',  # Inline event handlers (e.g., onerror, onclick)
-		r'<script.*?src=["\']http',  # External script tags
-		r"eval\(",  # Usage of eval()
-		r"Function\(",  # Usage of Function constructor
-		r"(btoa|atob)\(",  # Base64 encoding/decoding
-		# Dangerous XML patterns
-		r"<!ENTITY",  # XXE-related
-		r"<\?xml-stylesheet .*?>",  # External stylesheets in XML
-	]
-
-	with zipfile.ZipFile(zip_path, "r") as zf:
-		for file_name in zf.namelist():
-			if file_name.endswith((".html", ".js", ".xml")):
-				with zf.open(file_name) as file:
-					content = file.read().decode("utf-8", errors="ignore")
-					for pattern in suspicious_patterns:
-						if re.search(pattern, content):
-							frappe.throw(_("Suspicious pattern found in {0}: {1}").format(file_name, pattern))
-
-
-def get_manifest_file(extract_path):
-	manifest_file = None
-	for root, _dirs, files in os.walk(extract_path):
-		for file in files:
-			if file == "imsmanifest.xml":
-				manifest_file = os.path.join(root, file)
-				break
-		if manifest_file:
-			break
-	return manifest_file
-
-
-def get_launch_file(extract_path):
-	launch_file = None
-	manifest_file = get_manifest_file(extract_path)
-
-	if manifest_file:
-		with open(manifest_file) as file:
-			data = file.read()
-			dom = parseString(data)
-			resource = dom.getElementsByTagName("resource")
-			for res in resource:
-				if (
-					res.getAttribute("adlcp:scormtype") == "sco"
-					or res.getAttribute("adlcp:scormType") == "sco"
-				):
-					launch_file = res.getAttribute("href")
-					break
-
-		if launch_file:
-			launch_file = os.path.join(os.path.dirname(manifest_file), launch_file)
-
-	return launch_file
 
 
 def add_lesson(title, chapter, course, idx):
@@ -1142,23 +1056,10 @@ def add_lesson(title, chapter, course, idx):
 
 @frappe.whitelist()
 def delete_chapter(chapter):
-	chapterInfo = frappe.db.get_value(
-		"Course Chapter", chapter, ["is_scorm_package", "scorm_package_path"], as_dict=True
-	)
-
-	if chapterInfo.is_scorm_package:
-		delete_scorm_package(chapterInfo.scorm_package_path)
-
 	frappe.db.delete("Chapter Reference", {"chapter": chapter})
 	frappe.db.delete("Lesson Reference", {"parent": chapter})
 	frappe.db.delete("Course Lesson", {"chapter": chapter})
 	frappe.db.delete("Course Chapter", chapter)
-
-
-def delete_scorm_package(scorm_package_path):
-	scorm_package_path = frappe.get_site_path("public", scorm_package_path[1:])
-	if os.path.exists(scorm_package_path):
-		shutil.rmtree(scorm_package_path)
 
 
 @frappe.whitelist()

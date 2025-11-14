@@ -1842,69 +1842,8 @@ def publish_notifications(doc, method):
 	frappe.publish_realtime("publish_lms_notifications", user=doc.for_user, after_commit=True)
 
 
-def update_payment_record(doctype, docname):
-	request = frappe.get_all(
-		"Integration Request",
-		{
-			"reference_doctype": doctype,
-			"reference_docname": docname,
-			"owner": frappe.session.user,
-		},
-		order_by="creation desc",
-		limit=1,
-	)
-
-	if len(request):
-		data = frappe.db.get_value("Integration Request", request[0].name, "data")
-		data = frappe._dict(json.loads(data))
-
-		payment_gateway = data.get("payment_gateway")
-		if payment_gateway == "Razorpay":
-			payment_id = "razorpay_payment_id"
-		elif "Stripe" in payment_gateway:
-			payment_id = "stripe_token_id"
-		else:
-			payment_id = "order_id"
-
-		frappe.db.set_value(
-			"LMS Payment",
-			data.payment,
-			{
-				"payment_received": 1,
-				"payment_id": data.get(payment_id),
-				"order_id": data.get("order_id"),
-			},
-		)
-		payment_for_certificate = frappe.db.get_value("LMS Payment", data.payment, "payment_for_certificate")
-
-		try:
-			if payment_for_certificate:
-				update_certificate_purchase(docname, data.payment)
-			elif doctype == "LMS Course":
-				enroll_in_course(docname, data.payment)
-			else:
-				enroll_in_batch(docname, data.payment)
-		except Exception as e:
-			frappe.log_error(frappe.get_traceback(), _("Enrollment Failed, {0}").format(e))
-
-
-def enroll_in_course(course, payment_name):
-	if not frappe.db.exists("LMS Enrollment", {"member": frappe.session.user, "course": course}):
-		enrollment = frappe.new_doc("LMS Enrollment")
-		payment = frappe.db.get_value("LMS Payment", payment_name, ["name", "source"], as_dict=True)
-
-		enrollment.update(
-			{
-				"member": frappe.session.user,
-				"course": course,
-				"payment": payment.name,
-			}
-		)
-		enrollment.save(ignore_permissions=True)
-
-
 @frappe.whitelist()
-def enroll_in_batch(batch, payment_name=None):
+def enroll_in_batch(batch):
 	if not frappe.db.exists("LMS Batch Enrollment", {"batch": batch, "member": frappe.session.user}):
 		batch_doc = frappe.db.get_value("LMS Batch", batch, ["name", "seat_count"], as_dict=True)
 		students = frappe.db.count("LMS Batch Enrollment", {"batch": batch})
@@ -1918,27 +1857,7 @@ def enroll_in_batch(batch, payment_name=None):
 				"batch": batch,
 			}
 		)
-
-		if payment_name:
-			payment = frappe.db.get_value("LMS Payment", payment_name, ["name", "source"], as_dict=True)
-			new_student.update(
-				{
-					"payment": payment.name,
-					"source": payment.source,
-				}
-			)
 		new_student.save()
-
-
-def update_certificate_purchase(course, payment_name):
-	frappe.db.set_value(
-		"LMS Enrollment",
-		{"member": frappe.session.user, "course": course},
-		{
-			"purchased_certificate": 1,
-			"payment": payment_name,
-		},
-	)
 
 
 @frappe.whitelist()

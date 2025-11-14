@@ -41,8 +41,7 @@
 								? { fields: activeTab.fields }
 								: {}),
 							...(activeTab.label == 'Evaluators' ||
-							activeTab.label == 'Members' ||
-							activeTab.label == 'Transactions'
+							activeTab.label == 'Members'
 								? { 'onUpdate:show': (val) => (show = val), show }
 								: {}),
 						}"
@@ -77,9 +76,6 @@ import Evaluators from '@/components/Settings/Evaluators.vue'
 import Categories from '@/components/Settings/Categories.vue'
 import EmailTemplates from '@/components/Settings/EmailTemplates.vue'
 import BrandSettings from '@/components/Settings/BrandSettings.vue'
-import PaymentGateways from '@/components/Settings/PaymentGateways.vue'
-import Transactions from '@/components/Settings/Transactions.vue'
-import ZoomSettings from '@/components/Settings/ZoomSettings.vue'
 import Badges from '@/components/Settings/Badges.vue'
 
 const show = defineModel()
@@ -181,61 +177,6 @@ const tabsStructure = computed(() => {
 			],
 		},
 		{
-			label: 'Payment',
-			hideLabel: false,
-			items: [
-				{
-					label: 'Configuration',
-					icon: 'CreditCard',
-					description: 'Manage all your payment related settings and defaults',
-					fields: [
-						{
-							label: 'Default Currency',
-							name: 'default_currency',
-							type: 'Link',
-							doctype: 'Currency',
-						},
-						{
-							label: 'Payment Gateway',
-							name: 'payment_gateway',
-							type: 'Link',
-							doctype: 'Payment Gateway',
-						},
-						{
-							type: 'Column Break',
-						},
-						{
-							label: 'Apply GST for India',
-							name: 'apply_gst',
-							type: 'checkbox',
-						},
-						{
-							label: 'Show USD equivalent amount',
-							name: 'show_usd_equivalent',
-							type: 'checkbox',
-						},
-						{
-							label: 'Apply rounding on equivalent',
-							name: 'apply_rounding',
-							type: 'checkbox',
-						},
-					],
-				},
-				{
-					label: 'Gateways',
-					icon: 'DollarSign',
-					template: markRaw(PaymentGateways),
-					description: 'Add and manage all your payment gateways',
-				},
-				{
-					label: 'Transactions',
-					icon: 'Landmark',
-					template: markRaw(Transactions),
-					description: 'View all your payment transactions',
-				},
-			],
-		},
-		{
 			label: 'Lists',
 			hideLabel: false,
 			items: [
@@ -253,13 +194,6 @@ const tabsStructure = computed(() => {
 					description:
 						'Add new evaluators or check the slots existing evaluators',
 					template: markRaw(Evaluators),
-				},
-				{
-					label: 'Zoom Accounts',
-					description:
-						'Manage zoom accounts to conduct live classes from batches',
-					icon: 'Video',
-					template: markRaw(ZoomSettings),
 				},
 				{
 					label: 'Badges',
