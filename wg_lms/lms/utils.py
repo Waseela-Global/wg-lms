@@ -1111,19 +1111,11 @@ def get_course_outline(course, progress=False):
 		chapter_details = frappe.db.get_value(
 			"Course Chapter",
 			chapter.chapter,
-			["name", "title", "is_scorm_package", "launch_file", "scorm_package"],
+			["name", "title"],
 			as_dict=True,
 		)
 		chapter_details["idx"] = chapter.idx
 		chapter_details.lessons = get_lessons(course, chapter_details, progress=progress)
-
-		if chapter_details.is_scorm_package:
-			chapter_details.scorm_package = frappe.db.get_value(
-				"File",
-				chapter_details.scorm_package,
-				["file_name", "file_size", "file_url"],
-				as_dict=1,
-			)
 
 		outline.append(chapter_details)
 	return outline
@@ -1137,18 +1129,12 @@ def get_lesson(course, chapter, lesson):
 	lesson_details = frappe.db.get_value(
 		"Course Lesson",
 		lesson_name,
-		["include_in_preview", "title", "is_scorm_package"],
+		["include_in_preview", "title"],
 		as_dict=1,
 	)
 
 	if not lesson_details:
 		return {}
-
-	if lesson_details.is_scorm_package:
-		return {
-			"is_scorm_package": True,
-			"chapter_name": chapter_name,
-		}
 
 	membership = get_membership(course)
 	course_info = frappe.db.get_value(
@@ -1276,7 +1262,6 @@ def get_batch_details(batch):
 			"certification",
 			"timezone",
 			"category",
-			"zoom_account",
 		],
 		as_dict=True,
 	)

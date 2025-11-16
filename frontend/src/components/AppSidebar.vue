@@ -633,16 +633,6 @@ const articles = ref([
 		],
 	},
 	{
-		title: __('Monetization'),
-		opened: false,
-		subArticles: [
-			{
-				name: 'setting-up-payment-gateway',
-				title: __('Setting up payment gateway'),
-			},
-		],
-	},
-	{
 		title: __('Settings'),
 		opened: false,
 		subArticles: [{ name: 'roles', title: __('Roles') }],

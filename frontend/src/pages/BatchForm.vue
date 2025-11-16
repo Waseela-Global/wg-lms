@@ -166,16 +166,6 @@
                 }
               "
             />
-            <Link
-              doctype="LMS Zoom Settings"
-              :label="__('Zoom Account')"
-              v-model="batch.zoom_account"
-              :onCreate="
-                (value, close) => {
-                  openSettings('Zoom Accounts', close)
-                }
-              "
-            />
           </div>
           <div class="space-y-5">
             <FormControl
@@ -352,7 +342,6 @@ const batch = reactive({
   allow_self_enrollment: false,
   certification: false,
   image: null,
-  zoom_account: '',
 })
 
 const meta = reactive({

@@ -238,59 +238,6 @@ def validate_billing_access(billing_type, name):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_job_details(job):
-	return frappe.db.get_value(
-		"Job Opportunity",
-		job,
-		[
-			"job_title",
-			"location",
-			"country",
-			"type",
-			"work_mode",
-			"company_name",
-			"company_logo",
-			"company_website",
-			"name",
-			"creation",
-			"description",
-			"owner",
-		],
-		as_dict=1,
-	)
-
-
-@frappe.whitelist(allow_guest=True)
-def get_job_opportunities(filters=None, orFilters=None):
-	if not filters:
-		filters = {}
-
-	jobs = frappe.get_all(
-		"Job Opportunity",
-		filters=filters,
-		or_filters=orFilters,
-		fields=[
-			"job_title",
-			"location",
-			"country",
-			"type",
-			"work_mode",
-			"company_name",
-			"company_logo",
-			"name",
-			"creation",
-			"description",
-		],
-		order_by="creation desc",
-	)
-
-	for job in jobs:
-		job.description = frappe.utils.strip_html_tags(job.description)
-		job.applicants = frappe.db.count("LMS Job Application", {"job": job.name})
-	return jobs
-
-
-@frappe.whitelist(allow_guest=True)
 def get_chart_details():
 	details = frappe._dict()
 	details.enrollments = frappe.db.count("LMS Enrollment")
@@ -502,7 +449,6 @@ def get_sidebar_settings():
 		"courses",
 		"batches",
 		"certifications",
-		"jobs",
 		"statistics",
 		"notifications",
 		"programming_exercises",
@@ -816,37 +762,6 @@ def get_count(doctype, filters):
 		doctype,
 		filters=filters,
 	)
-
-
-@frappe.whitelist()
-def get_payment_gateway_details(payment_gateway):
-	gateway = frappe.get_doc("Payment Gateway", payment_gateway)
-
-	if gateway.gateway_controller is None:
-		try:
-			data = frappe.get_doc(f"{payment_gateway} Settings").as_dict()
-			meta = frappe.get_meta(f"{payment_gateway} Settings").fields
-			doctype = f"{payment_gateway} Settings"
-			docname = f"{payment_gateway} Settings"
-		except Exception:
-			frappe.throw(_("{0} Settings not found").format(payment_gateway))
-	else:
-		try:
-			data = frappe.get_doc(gateway.gateway_settings, gateway.gateway_controller).as_dict()
-			meta = frappe.get_meta(gateway.gateway_settings).fields
-			doctype = gateway.gateway_settings
-			docname = gateway.gateway_controller
-		except Exception:
-			frappe.throw(_("{0} Settings not found").format(payment_gateway))
-
-	gateway_fields = get_transformed_fields(meta, data)
-
-	return {
-		"fields": gateway_fields,
-		"data": data,
-		"doctype": doctype,
-		"docname": docname,
-	}
 
 
 def get_transformed_fields(meta, data=None):

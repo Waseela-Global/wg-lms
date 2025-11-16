@@ -26,7 +26,6 @@
   "description",
   "column_break_hlqw",
   "instructors",
-  "zoom_account",
   "section_break_rgfj",
   "medium",
   "category",
@@ -45,18 +44,10 @@
   "schedule_tab",
   "timetable_template",
   "column_break_anya",
-  "show_live_class",
   "allow_future",
   "section_break_ontp",
   "timetable",
   "timetable_legends",
-  "pricing_tab",
-  "section_break_gsac",
-  "paid_batch",
-  "column_break_iens",
-  "amount",
-  "currency",
-  "amount_usd",
   "customisations_tab",
   "section_break_ubxi",
   "custom_component",
@@ -111,13 +102,6 @@
    "fieldtype": "Code",
    "label": "Custom HTML",
    "options": "HTML"
-  },
-  {
-   "default": "0",
-   "description": "Students will be enrolled in a paid batch once they complete the payment",
-   "fieldname": "paid_batch",
-   "fieldtype": "Check",
-   "label": "Paid Batch"
   },
   {
    "fieldname": "seat_count",
@@ -181,29 +165,6 @@
    "label": "Timetable"
   },
   {
-   "fieldname": "section_break_gsac",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_iens",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "paid_batch",
-   "fieldname": "amount",
-   "fieldtype": "Currency",
-   "label": "Amount",
-   "mandatory_depends_on": "paid_batch"
-  },
-  {
-   "depends_on": "paid_batch",
-   "fieldname": "currency",
-   "fieldtype": "Link",
-   "label": "Currency",
-   "mandatory_depends_on": "paid_batch",
-   "options": "Currency"
-  },
-  {
    "fieldname": "batch_details",
    "fieldtype": "Text Editor",
    "label": "Batch Details",
@@ -231,12 +192,6 @@
   {
    "fieldname": "column_break_anya",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "fieldname": "show_live_class",
-   "fieldtype": "Check",
-   "label": "Show live class"
   },
   {
    "fieldname": "section_break_ontp",
@@ -270,11 +225,6 @@
    "label": "Customisations"
   },
   {
-   "fieldname": "pricing_tab",
-   "fieldtype": "Tab Break",
-   "label": "Pricing"
-  },
-  {
    "fieldname": "custom_script",
    "fieldtype": "Code",
    "label": "Custom Script (JavaScript)",
@@ -296,13 +246,6 @@
    "fieldname": "evaluation_end_date",
    "fieldtype": "Date",
    "label": "Evaluation End Date"
-  },
-  {
-   "depends_on": "paid_batch",
-   "description": "If you set an amount here, then the USD equivalent setting will not get applied.",
-   "fieldname": "amount_usd",
-   "fieldtype": "Currency",
-   "label": "Amount (USD)"
   },
   {
    "default": "0",
@@ -355,12 +298,6 @@
   {
    "fieldname": "section_break_cssv",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "zoom_account",
-   "fieldtype": "Link",
-   "label": "Zoom Account",
-   "options": "LMS Zoom Settings"
   }
  ],
  "grid_page_length": 50,

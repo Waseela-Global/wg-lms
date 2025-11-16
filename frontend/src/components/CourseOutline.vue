@@ -45,7 +45,6 @@
 									:class="{
 										'rotate-90 transform duration-200': open,
 										'duration-200': !open,
-										hidden: chapter.is_scorm_package,
 										open: index == 1,
 									}"
 									class="h-4 w-4 text-ink-gray-9 stroke-1"
@@ -73,9 +72,8 @@
 									</Tooltip>
 								</div>
 							</DisclosureButton>
-							<DisclosurePanel v-if="!chapter.is_scorm_package">
+							<DisclosurePanel>
 								<Draggable
-									v-if="!chapter.is_scorm_package"
 									:list="chapter.lessons"
 									:disabled="!allowEdit"
 									item-key="name"
@@ -132,7 +130,6 @@
 								</Draggable>
 								<div v-if="allowEdit" class="flex mt-2 mb-4 pl-8">
 									<router-link
-										v-if="!chapter.is_scorm_package"
 										:to="{
 											name: 'LessonForm',
 											params: {
@@ -370,21 +367,8 @@ const trashChapter = (chapterName) => {
 }
 
 const redirectToChapter = (chapter) => {
-	if (!chapter.is_scorm_package) return
-	event.preventDefault()
-	if (props.allowEdit) return
-	if (!user.data) {
-		toast.success(__('Please enroll for this course to view this lesson'))
+	// SCORM support removed - chapters now always show lessons
 		return
-	}
-
-	router.push({
-		name: 'SCORMChapter',
-		params: {
-			courseName: props.courseName,
-			chapterName: chapter.name,
-		},
-	})
 }
 
 const isActiveLesson = (lessonNumber) => {
