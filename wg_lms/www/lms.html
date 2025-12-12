@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waseela LMS</title>
+	<link rel="icon" type="image/svg+xml" href="/assets/wg_lms/images/lms-logo.svg" />
+    <script type="module" crossorigin src="/assets/wg_lms/frontend/assets/index-DYd_OiTG.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/wg_lms/frontend/assets/react-vendor-N4oqWL6c.js">
+    <link rel="stylesheet" crossorigin href="/assets/wg_lms/frontend/assets/index-DA-lWyLB.css">
+  </head>
+<body class="antialiased">
+    <div id="root"></div>
+	
+	<script>
+		window.csrf_token = "{{ csrf_token }}";
+		window.site_name = '{{ site_name }}';
+		if (!window.frappe) window.frappe = {};
+		frappe.boot = {{ boot }};
+	</script>
+	
+  </body>
+</html>

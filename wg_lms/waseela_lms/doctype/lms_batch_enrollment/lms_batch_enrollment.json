@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "student",
+  "batch",
+  "enrollment_date",
+  "status",
+  "source",
+  "progress"
+ ],
+ "fields": [
+  {
+   "fieldname": "student",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Student",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "batch",
+   "fieldtype": "Link",
+   "options": "LMS Batch",
+   "label": "Batch",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "enrollment_date",
+   "fieldtype": "Date",
+   "label": "Enrollment Date",
+   "reqd": 1,
+   "default": "Today"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "options": "Enrolled\\nCompleted\\nDropped",
+   "label": "Status",
+   "default": "Enrolled",
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "source",
+   "fieldtype": "Link",
+   "options": "LMS Source",
+   "label": "Source"
+  },
+  {
+   "fieldname": "progress",
+   "fieldtype": "Int",
+   "label": "Progress (%)",
+   "default": "0"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Batch Enrollment",
+ "owner": "Administrator",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}

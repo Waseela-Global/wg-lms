@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+		@apply border-gray-200 dark:border-gray-700;
+  }
+  body {
+		@apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .btn {
+		@apply inline-flex items-center justify-center rounded-lg text-sm font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+		@apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm hover:shadow-md focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+		@apply bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400 dark:active:bg-gray-500;
+  }
+  
+  .btn-outline {
+		@apply border-2 border-gray-300 dark:border-gray-600 bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800 active:bg-gray-100 dark:active:bg-gray-700;
+  }
+  
+  .btn-sm {
+		@apply h-9 px-3 text-xs;
+  }
+  
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+  
+  .btn-lg {
+		@apply h-12 px-8 text-base;
+  }
+  
+  .card {
+		@apply rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm;
+  }
+  
+  .input {
+		@apply flex h-11 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-primary-600 disabled:cursor-not-allowed disabled:opacity-50 transition-all;
+  }
+  
+  .label {
+		@apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2;
+  }
+}
+
+/* Dark mode */
+.dark body {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark .card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .input {
+	@apply bg-gray-800 border-gray-600 text-white placeholder:text-gray-500;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-700 text-gray-100 hover:bg-gray-600 active:bg-gray-500;
+}
+
+/* Markdown content styling */
+.prose {
+  @apply max-w-none;
+}
+
+.prose h1 {
+	@apply text-3xl font-bold mt-6 mb-4 text-gray-900 dark:text-gray-100;
+}
+
+.prose h2 {
+	@apply text-2xl font-bold mt-5 mb-3 text-gray-900 dark:text-gray-100;
+}
+
+.prose h3 {
+	@apply text-xl font-bold mt-4 mb-2 text-gray-900 dark:text-gray-100;
+}
+
+.prose p {
+	@apply my-4 text-gray-700 dark:text-gray-300;
+}
+
+.prose ul,
+.prose ol {
+  @apply my-4 ml-6;
+}
+
+.prose li {
+	@apply my-2 text-gray-700 dark:text-gray-300;
+}
+
+.prose code {
+	@apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-gray-800 dark:text-gray-200;
+}
+
+.prose pre {
+  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto my-4;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose a {
+	@apply text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 underline;
+}
+
+.prose img {
+  @apply rounded-lg my-4;
+}
+
+.prose blockquote {
+	@apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic my-4 text-gray-600 dark:text-gray-400;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite];
+}
+
+/* Shimmer animation for progress bars */
+@keyframes shimmer {
+	0% {
+		transform: translateX(-100%);
+	}
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.animate-shimmer {
+	animation: shimmer 2s infinite;
+}
+
+/* Smooth scroll */
+html {
+	scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	@apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+	@apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	@apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+}

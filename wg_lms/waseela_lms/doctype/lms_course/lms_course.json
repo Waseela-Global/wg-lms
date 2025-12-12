@@ -1,0 +1,217 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:title",
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "short_introduction",
+  "description",
+  "column_break_1",
+  "category",
+  "image",
+  "video_link",
+  "section_break_2",
+  "published",
+  "featured",
+  "enable_certificate",
+  "instructors_section",
+  "instructors",
+  "chapters_section",
+  "chapters",
+  "tags_section",
+  "tags",
+  "statistics_section",
+  "total_enrollments",
+  "total_lessons",
+  "average_rating"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "short_introduction",
+   "fieldtype": "Small Text",
+   "label": "Short Introduction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "LMS Category"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "video_link",
+   "fieldtype": "Data",
+   "label": "Intro Video URL"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published"
+  },
+  {
+   "default": "0",
+   "fieldname": "featured",
+   "fieldtype": "Check",
+   "label": "Featured"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_certificate",
+   "fieldtype": "Check",
+   "label": "Enable Certificate"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "instructors_section",
+   "fieldtype": "Section Break",
+   "label": "Instructors"
+  },
+  {
+   "fieldname": "instructors",
+   "fieldtype": "Table",
+   "label": "Instructors",
+   "options": "LMS Course Instructor"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "chapters_section",
+   "fieldtype": "Section Break",
+   "label": "Chapters"
+  },
+  {
+   "fieldname": "chapters",
+   "fieldtype": "Table",
+   "label": "Chapters",
+   "options": "LMS Chapter Reference"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "tags_section",
+   "fieldtype": "Section Break",
+   "label": "Tags"
+  },
+  {
+   "fieldname": "tags",
+   "fieldtype": "Data",
+   "label": "Tags (comma-separated)"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "statistics_section",
+   "fieldtype": "Section Break",
+   "label": "Statistics",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_enrollments",
+   "fieldtype": "Int",
+   "label": "Total Enrollments",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_lessons",
+   "fieldtype": "Int",
+   "label": "Total Lessons",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "average_rating",
+   "fieldtype": "Float",
+   "label": "Average Rating",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Course",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Course Creator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "title_field": "title"
+}
+

@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "description",
+  "start_date",
+  "end_date",
+  "start_time",
+  "end_time",
+  "timezone",
+  "medium",
+  "seat_count",
+  "published",
+  "allow_self_enrollment",
+  "courses",
+  "instructors",
+  "category",
+  "enable_certificate"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Time",
+   "label": "Start Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Time",
+   "label": "End Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "timezone",
+   "fieldtype": "Data",
+   "label": "Timezone",
+   "reqd": 1,
+   "default": "UTC"
+  },
+  {
+   "fieldname": "medium",
+   "fieldtype": "Select",
+   "options": "Online\\nOffline",
+   "label": "Medium",
+   "default": "Online"
+  },
+  {
+   "fieldname": "seat_count",
+   "fieldtype": "Int",
+   "label": "Seat Count"
+  },
+  {
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published",
+   "default": "0"
+  },
+  {
+   "fieldname": "allow_self_enrollment",
+   "fieldtype": "Check",
+   "label": "Allow Self Enrollment",
+   "default": "0"
+  },
+  {
+   "fieldname": "courses",
+   "fieldtype": "Table",
+   "options": "LMS Batch Course",
+   "label": "Courses"
+  },
+  {
+   "fieldname": "instructors",
+   "fieldtype": "Table",
+   "options": "LMS Course Instructor",
+   "label": "Instructors"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "options": "LMS Category",
+   "label": "Category"
+  },
+  {
+   "fieldname": "enable_certificate",
+   "fieldtype": "Check",
+   "label": "Enable Certificate",
+   "default": "0"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Batch",
+ "owner": "Administrator",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "autoname": "field:title",
+ "naming_rule": "By fieldname",
+ "allow_rename": 1,
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}

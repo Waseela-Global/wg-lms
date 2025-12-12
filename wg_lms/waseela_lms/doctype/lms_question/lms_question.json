@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "question",
+  "type",
+  "marks",
+  "options",
+  "explanation"
+ ],
+ "fields": [
+  {
+   "fieldname": "question",
+   "fieldtype": "Text Editor",
+   "label": "Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "type",
+   "fieldtype": "Select",
+   "options": "Single Choice\\nMultiple Choice\\nTrue/False",
+   "label": "Type",
+   "reqd": 1,
+   "default": "Single Choice"
+  },
+  {
+   "fieldname": "marks",
+   "fieldtype": "Int",
+   "label": "Default Marks",
+   "default": "1"
+  },
+  {
+   "fieldname": "options",
+   "fieldtype": "Table",
+   "options": "LMS Option",
+   "label": "Options"
+  },
+  {
+   "fieldname": "explanation",
+   "fieldtype": "Text Editor",
+   "label": "Explanation"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Question",
+ "owner": "Administrator",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}

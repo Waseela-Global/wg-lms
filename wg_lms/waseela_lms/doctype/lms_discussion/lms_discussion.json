@@ -1,0 +1,100 @@
+{
+ "actions": [],
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "content",
+  "owner",
+  "course",
+  "lesson",
+  "is_pinned",
+  "is_locked",
+  "view_count",
+  "reply_count"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Text Editor",
+   "label": "Content",
+   "reqd": 1
+  },
+  {
+   "fieldname": "owner",
+   "fieldtype": "Link",
+   "options": "User",
+   "label": "Owner",
+   "default": "__user"
+  },
+  {
+   "fieldname": "course",
+   "fieldtype": "Link",
+   "options": "LMS Course",
+   "label": "Course"
+  },
+  {
+   "fieldname": "lesson",
+   "fieldtype": "Link",
+   "options": "Course Lesson",
+   "label": "Lesson"
+  },
+  {
+   "fieldname": "is_pinned",
+   "fieldtype": "Check",
+   "label": "Pinned",
+   "default": "0"
+  },
+  {
+   "fieldname": "is_locked",
+   "fieldtype": "Check",
+   "label": "Locked",
+   "default": "0"
+  },
+  {
+   "fieldname": "view_count",
+   "fieldtype": "Int",
+   "label": "View Count",
+   "default": "0"
+  },
+  {
+   "fieldname": "reply_count",
+   "fieldtype": "Int",
+   "label": "Reply Count",
+   "default": "0"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Discussion",
+ "owner": "Administrator",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  }
+ ]
+}

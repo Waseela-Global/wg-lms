@@ -1,0 +1,67 @@
+{
+ "actions": [],
+ "creation": "2025-11-17 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "allow_guest_access",
+  "disable_signup",
+  "default_category",
+  "livecode_url",
+  "contact_email",
+  "meta_description",
+  "meta_keywords"
+ ],
+ "fields": [
+  {
+   "fieldname": "allow_guest_access",
+   "fieldtype": "Check",
+   "label": "Allow Guest Access",
+   "default": "0"
+  },
+  {
+   "fieldname": "disable_signup",
+   "fieldtype": "Check",
+   "label": "Disable Public Signup",
+   "default": "0"
+  },
+  {
+   "fieldname": "default_category",
+   "fieldtype": "Link",
+   "options": "LMS Category",
+   "label": "Default Category"
+  },
+  {
+   "fieldname": "livecode_url",
+   "fieldtype": "Data",
+   "label": "Livecode URL"
+  },
+  {
+   "fieldname": "contact_email",
+   "fieldtype": "Data",
+   "label": "Contact Email"
+  },
+  {
+   "fieldname": "meta_description",
+   "fieldtype": "Text",
+   "label": "Meta Description"
+  },
+  {
+   "fieldname": "meta_keywords",
+   "fieldtype": "Data",
+   "label": "Meta Keywords"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waseela LMS",
+ "name": "LMS Settings",
+ "owner": "Administrator",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1,
+ "issingle": 1
+}

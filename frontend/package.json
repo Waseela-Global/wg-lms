@@ -1,0 +1,34 @@
+{
+  "name": "waseela-lms-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --base=/assets/wg_lms/frontend/ && npm run copy-html-entry",
+    "preview": "vite preview",
+    "copy-html-entry": "cp ../wg_lms/public/frontend/index.html ../wg_lms/www/lms.html"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "frappe-react-sdk": "^1.0.0",
+    "frappe-ui": "^0.0.1",
+    "dayjs": "^1.11.10",
+    "marked": "^11.0.0",
+    "react-markdown": "^9.0.1",
+    "remark-gfm": "^4.0.0",
+    "prismjs": "^1.29.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "vite": "^5.0.8"
+  }
+}
+
