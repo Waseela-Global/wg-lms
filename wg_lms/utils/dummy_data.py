@@ -16,6 +16,10 @@ def create_dummy_data():
 	
 	print("🚀 Creating dummy data for Waseela LMS...")
 	
+	# Clear existing dummy data first to avoid duplicates
+	print("   🗑️  Clearing existing dummy data...")
+	clear_existing_dummy_data()
+	
 	# Get existing users
 	existing_users = get_existing_users()
 	print(f"   Found {len(existing_users)} existing users")
@@ -377,6 +381,12 @@ def create_courses(categories, instructors):
 	
 	created = []
 	for course_data in courses_data:
+		# Check if course already exists
+		existing_course = frappe.db.get_value("LMS Course", {"title": course_data["title"]}, "name")
+		if existing_course:
+			created.append(existing_course)
+			continue
+		
 		# Get category
 		category = course_data["category"]
 		if category not in categories:
@@ -473,21 +483,53 @@ def create_batches(courses):
 	
 	created = []
 	for batch_data in batches_data:
-		batch = frappe.get_doc({
-			"doctype": "LMS Batch",
-			"title": batch_data["title"],
-			"description": batch_data["description"],
-			"start_date": batch_data["start_date"],
-			"end_date": batch_data["end_date"],
-			"start_time": batch_data["start_time"],
-			"end_time": batch_data["end_time"],
-			"timezone": batch_data["timezone"],
-			# medium has default "Online" so we don't need to set it
-			"seat_count": batch_data["seat_count"],
-			"published": batch_data["published"],
-			"allow_self_enrollment": batch_data["allow_self_enrollment"],
-		})
-		batch.insert(ignore_permissions=True)
+		# Check if batch already exists (title is unique)
+		existing_batch_name = frappe.db.get_value("LMS Batch", {"title": batch_data["title"]}, "name")
+		if existing_batch_name:
+			created.append(existing_batch_name)
+			continue
+		
+		try:
+			# First try with medium explicitly set
+			batch = frappe.get_doc({
+				"doctype": "LMS Batch",
+				"title": batch_data["title"],
+				"description": batch_data["description"],
+				"start_date": batch_data["start_date"],
+				"end_date": batch_data["end_date"],
+				"start_time": batch_data["start_time"],
+				"end_time": batch_data["end_time"],
+				"timezone": batch_data["timezone"],
+				"medium": "Online",
+				"seat_count": batch_data["seat_count"],
+				"published": batch_data["published"],
+				"allow_self_enrollment": batch_data["allow_self_enrollment"],
+			})
+			batch.flags.ignore_validate = True
+			batch.insert(ignore_permissions=True)
+		except Exception as e:
+			print(f"   ⚠️  Error creating batch '{batch_data['title']}': {e}")
+			print(f"      Trying without explicit medium field...")
+			# Try without medium - let default handle it
+			try:
+				batch = frappe.get_doc({
+					"doctype": "LMS Batch",
+					"title": batch_data["title"],
+					"description": batch_data["description"],
+					"start_date": batch_data["start_date"],
+					"end_date": batch_data["end_date"],
+					"start_time": batch_data["start_time"],
+					"end_time": batch_data["end_time"],
+					"timezone": batch_data["timezone"],
+					"seat_count": batch_data["seat_count"],
+					"published": batch_data["published"],
+					"allow_self_enrollment": batch_data["allow_self_enrollment"],
+				})
+				batch.flags.ignore_validate = True
+				batch.insert(ignore_permissions=True)
+			except Exception as e2:
+				print(f"   ❌ Failed to create batch '{batch_data['title']}': {e2}")
+				continue
 		
 		# Add courses
 		for course_name in batch_data["courses"]:
@@ -711,6 +753,12 @@ def create_quiz_data(courses):
 				lessons.append(lesson_ref.lesson)
 		
 		for lesson_name in lessons:
+			# Check if quiz already exists for this lesson
+			existing_quiz = frappe.db.get_value("LMS Quiz", {"lesson": lesson_name}, "name")
+			if existing_quiz:
+				quizzes_created += 1
+				continue
+			
 			# Create quiz
 			quiz = frappe.get_doc({
 				"doctype": "LMS Quiz",
@@ -804,9 +852,15 @@ def create_assignment_data(courses):
 				lessons.append(chapter.lessons[0].lesson)  # One assignment per course
 		
 		for lesson_name in lessons:
+			# Check if assignment already exists for this lesson
+			lesson_doc = frappe.get_doc("Course Lesson", lesson_name)
+			if lesson_doc.assignment_id and frappe.db.exists("LMS Assignment", lesson_doc.assignment_id):
+				assignments_created += 1
+				continue
+			
 			assignment = frappe.get_doc({
 				"doctype": "LMS Assignment",
-				"title": f"Assignment: {frappe.get_doc('Course Lesson', lesson_name).title}",
+				"title": f"Assignment: {lesson_doc.title}",
 				"question": f"<p>Complete the following assignment based on the lesson content:</p><ol><li>Review the lesson material</li><li>Complete the practice exercises</li><li>Submit your work</li></ol>",
 				"type": "Document",
 				"grade_assignment": 1,
@@ -897,12 +951,8 @@ def create_certificate_data(students, courses):
 	return certificates_created
 
 
-@frappe.whitelist()
-def clear_dummy_data():
-	"""Clear all dummy data (use with caution!)"""
-	if not frappe.conf.developer_mode:
-		frappe.throw("This function is only available in developer mode")
-	
+def clear_existing_dummy_data():
+	"""Clear existing dummy data before creating new data"""
 	# Delete in reverse order of dependencies
 	doctypes_to_clear = [
 		"LMS Quiz Attempt",
@@ -921,10 +971,35 @@ def clear_dummy_data():
 		"LMS Quiz",
 		"LMS Question",
 		"LMS Assignment",
+		"LMS Training Assignment",
+		"LMS Training Feedback",
+		"LMS Feedback Question",
 	]
 	
+	total_deleted = 0
 	for doctype in doctypes_to_clear:
-		frappe.db.sql(f"DELETE FROM `tab{doctype}`")
+		try:
+			count = frappe.db.count(doctype)
+			if count > 0:
+				frappe.db.sql(f"DELETE FROM `tab{doctype}`")
+				total_deleted += count
+				print(f"      - Deleted {count} {doctype} records")
+		except Exception as e:
+			# DocType might not exist, skip silently
+			pass
 	
 	frappe.db.commit()
+	if total_deleted > 0:
+		print(f"   ✅ Cleared {total_deleted} existing records")
+	else:
+		print(f"   ✅ No existing data to clear")
+
+
+@frappe.whitelist()
+def clear_dummy_data():
+	"""Clear all dummy data (use with caution!)"""
+	if not frappe.conf.developer_mode:
+		frappe.throw("This function is only available in developer mode")
+	
+	clear_existing_dummy_data()
 	print("✅ Dummy data cleared!")

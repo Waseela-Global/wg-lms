@@ -95,12 +95,20 @@ def update_enrollment_progress(student, course):
 		)
 		enrollment.progress = int((completed_lessons / total_lessons) * 100)
 		
-		# Check if course is complete
-		if enrollment.progress == 100 and not enrollment.is_completed:
-			enrollment.is_completed = 1
-			enrollment.completed_on = frappe.utils.today()
+		# Don't auto-complete here - let completion API check all requirements
+		# if enrollment.progress == 100 and not enrollment.is_completed:
+		# 	enrollment.is_completed = 1
+		# 	enrollment.completed_on = frappe.utils.today()
 	
 	enrollment.save(ignore_permissions=True)
+	
+	# Check completion requirements if progress is 100%
+	if enrollment.progress == 100 and not enrollment.is_completed:
+		try:
+			from wg_lms.api.completion import check_completion_status
+			check_completion_status(enrollment.name)
+		except Exception as e:
+			frappe.log_error(f"Error checking completion status: {e}")
 	
 	# Auto-generate certificate if course is completed
 	if enrollment.is_completed:

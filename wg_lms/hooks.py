@@ -181,7 +181,14 @@ fixtures = [
 # ---------------
 
 scheduler_events = {
-	"daily": ["wg_lms.tasks.update_course_statistics"],
+	"daily": [
+		"wg_lms.tasks.update_course_statistics",
+		"wg_lms.tasks.check_and_renew_assignments"
+	],
+	"hourly": [
+		"wg_lms.tasks.send_reminder_notifications",
+		"wg_lms.tasks.update_overdue_status"
+	],
 }
 
 # Dummy Data Command

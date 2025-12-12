@@ -52,6 +52,9 @@ def generate_certificate(course_id, student=None):
 	# Generate certificate HTML
 	certificate_html = generate_certificate_html(course_doc, student_doc, certificate_number, enrollment.completed_on)
 	
+	# Get validity period from course settings or default
+	validity_period = course_doc.get("certificate_validity_period") or 0
+	
 	# Create certificate
 	certificate = frappe.get_doc({
 		"doctype": "LMS Certificate",
@@ -59,6 +62,7 @@ def generate_certificate(course_id, student=None):
 		"course": course_id,
 		"certificate_number": certificate_number,
 		"issue_date": enrollment.completed_on or today(),
+		"validity_period": validity_period,
 		"certificate_html": certificate_html
 	})
 	certificate.insert(ignore_permissions=True)

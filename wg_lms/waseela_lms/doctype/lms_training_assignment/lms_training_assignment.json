@@ -1,0 +1,157 @@
+{
+  "actions": [],
+  "creation": "2025-11-17 00:00:00.000000",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "course",
+    "student",
+    "employee",
+    "column_break_1",
+    "assigned_by",
+    "assigned_date",
+    "due_date",
+    "assignment_type",
+    "status",
+    "section_break_2",
+    "auto_renewal_period",
+    "last_renewed_on",
+    "next_renewal_date",
+    "section_break_3",
+    "completion_rules_json"
+  ],
+  "fields": [
+    {
+      "fieldname": "course",
+      "fieldtype": "Link",
+      "options": "LMS Course",
+      "label": "Course",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "student",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Student",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "employee",
+      "fieldtype": "Link",
+      "options": "Employee",
+      "label": "Employee",
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "assigned_by",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Assigned By",
+      "default": "__user",
+      "read_only": 1
+    },
+    {
+      "fieldname": "assigned_date",
+      "fieldtype": "Date",
+      "label": "Assigned Date",
+      "default": "Today",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "due_date",
+      "fieldtype": "Date",
+      "label": "Due Date",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "assignment_type",
+      "fieldtype": "Select",
+      "options": "Mandatory\nOptional",
+      "label": "Assignment Type",
+      "default": "Mandatory",
+      "reqd": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Select",
+      "options": "Assigned\nIn Progress\nCompleted\nOverdue",
+      "label": "Status",
+      "default": "Assigned",
+      "read_only": 1,
+      "in_list_view": 1
+    },
+    {
+      "fieldname": "section_break_2",
+      "fieldtype": "Section Break",
+      "label": "Auto Renewal"
+    },
+    {
+      "fieldname": "auto_renewal_period",
+      "fieldtype": "Int",
+      "label": "Auto Renewal Period (months)",
+      "default": "0",
+      "description": "0 = No auto renewal"
+    },
+    {
+      "fieldname": "last_renewed_on",
+      "fieldtype": "Date",
+      "label": "Last Renewed On",
+      "read_only": 1
+    },
+    {
+      "fieldname": "next_renewal_date",
+      "fieldtype": "Date",
+      "label": "Next Renewal Date",
+      "read_only": 1
+    },
+    {
+      "fieldname": "section_break_3",
+      "fieldtype": "Section Break",
+      "label": "Completion Rules"
+    },
+    {
+      "fieldname": "completion_rules_json",
+      "fieldtype": "JSON",
+      "label": "Completion Rules (JSON)",
+      "description": "Stores completion requirements: {quiz_required: bool, feedback_required: bool, min_quiz_score: int}"
+    }
+  ],
+  "index_web_pages_for_search": 1,
+  "links": [],
+  "modified": "2025-11-17 00:00:00.000000",
+  "modified_by": "Administrator",
+  "module": "Waseela LMS",
+  "name": "LMS Training Assignment",
+  "owner": "Administrator",
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1,
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "read": 1,
+      "report": 1,
+      "role": "LMS Admin",
+      "share": 1,
+      "write": 1
+    },
+    {
+      "read": 1,
+      "role": "Student"
+    }
+  ]
+}

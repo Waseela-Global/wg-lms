@@ -20,7 +20,7 @@
   {
    "fieldname": "type",
    "fieldtype": "Select",
-   "options": "Single Choice\\nMultiple Choice\\nTrue/False",
+   "options": "Single Choice\nMultiple Choice\nTrue/False",
    "label": "Type",
    "reqd": 1,
    "default": "Single Choice"

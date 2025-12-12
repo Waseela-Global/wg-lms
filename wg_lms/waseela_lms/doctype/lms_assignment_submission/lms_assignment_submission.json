@@ -43,7 +43,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
-   "options": "Draft\\nSubmitted\\nGraded",
+   "options": "Draft\nSubmitted\nGraded",
    "label": "Status",
    "default": "Draft",
    "in_list_view": 1
