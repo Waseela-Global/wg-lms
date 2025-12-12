@@ -52,22 +52,69 @@ export const API_ENDPOINTS = {
 	GET_CERTIFICATE: "wg_lms.api.certificates.get_certificate",
 	GENERATE_CERTIFICATE: "wg_lms.api.certificates.generate_certificate",
 	DOWNLOAD_CERTIFICATE: "wg_lms.api.certificates.download_certificate",
+
+	// Training Assignment
+	ASSIGN_TRAINING: "wg_lms.api.training_assignment.assign_training",
+	BULK_ASSIGN_TRAINING: "wg_lms.api.training_assignment.bulk_assign_training",
+	GET_MY_ASSIGNMENTS: "wg_lms.api.training_assignment.get_my_assignments",
+	GET_ASSIGNMENT_STATS: "wg_lms.api.training_assignment.get_assignment_stats",
+
+	// Feedback
+	GET_FEEDBACK_FORM: "wg_lms.api.feedback.get_feedback_form",
+	SUBMIT_FEEDBACK: "wg_lms.api.feedback.submit_feedback",
+	CHECK_COMPLETION_REQUIREMENTS: "wg_lms.api.feedback.check_completion_requirements",
+
+	// Completion
+	CHECK_COMPLETION_STATUS: "wg_lms.api.completion.check_completion_status",
+	GET_COMPLETION_REQUIREMENTS: "wg_lms.api.completion.get_completion_requirements",
 };
+
+let csrfPromise = null;
+
+async function getCSRFToken() {
+	const existing = window.csrf_token;
+	if (existing && typeof existing === "string" && !existing.includes("{{")) {
+		return existing;
+	}
+
+	if (!csrfPromise) {
+		csrfPromise = fetch("/api/method/frappe.sessions.get_csrf_token", {
+			method: "GET",
+			credentials: "include",
+		})
+			.then(async (res) => {
+				if (!res.ok) return null;
+				const data = await res.json().catch(() => null);
+				const token = data?.message?.csrf_token || data?.message || null;
+				if (token && typeof token === "string") {
+					window.csrf_token = token;
+					return token;
+				}
+				return null;
+			})
+			.catch(() => null);
+	}
+
+	return await csrfPromise;
+}
 
 // Helper function to call Frappe API
 export async function callAPI(method, args = {}) {
+	const csrf = await getCSRFToken();
+
 	const response = await fetch(`/api/method/${method}`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
-			"X-Frappe-CSRF-Token": window.csrf_token || "",
+			...(csrf ? { "X-Frappe-CSRF-Token": csrf } : {}),
 		},
+		credentials: "include",
 		body: JSON.stringify(args),
 	});
 
 	if (!response.ok) {
-		const error = await response.json();
-		throw new Error(error.message || "API call failed");
+		const error = await response.json().catch(() => ({}));
+		throw new Error(error.message || error._server_messages || "API call failed");
 	}
 
 	const data = await response.json();

@@ -5,46 +5,46 @@ import { Button } from '../components/FrappeUI'
 import { usePermissions } from '../hooks/usePermissions'
 import FloatingActionButton from '../components/FloatingActionButton'
 
-export default function MainLayout({ children }) {
+export default function MainLayout( { children } ) {
   const { currentUser, logout } = useFrappeAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
-  const [isAdminMenuOpen, setIsAdminMenuOpen] = React.useState(false)
+  const [ isMobileMenuOpen, setIsMobileMenuOpen ] = React.useState( false )
+  const [ isAdminMenuOpen, setIsAdminMenuOpen ] = React.useState( false )
   const { isAdmin, canCreateCourse, canCreateBatch, isLoading: permissionsLoading, profile } = usePermissions()
-  
+
   // Debug: Log permissions in development
-  React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && profile) {
-      console.log('MainLayout Permissions:', {
+  React.useEffect( () => {
+    if ( process.env.NODE_ENV === 'development' && profile ) {
+      console.log( 'MainLayout Permissions:', {
         isAdmin,
         canCreateCourse,
         canCreateBatch,
         permissionsLoading,
         hasProfile: !!profile,
-      })
+      } )
     }
-  }, [isAdmin, canCreateCourse, canCreateBatch, permissionsLoading, profile])
-  
+  }, [ isAdmin, canCreateCourse, canCreateBatch, permissionsLoading, profile ] )
+
   const handleLogout = async () => {
     await logout()
-    navigate('/login')
+    navigate( '/login' )
   }
-  
+
   const isGuest = !currentUser || currentUser === 'Guest'
-  
-  const isActive = (path) => location.pathname.startsWith(path)
-  
+
+  const isActive = ( path ) => location.pathname.startsWith( path )
+
   const navLinks = [
     { to: '/courses', label: 'Courses' },
     { to: '/batches', label: 'Batches' },
-    ...(!isGuest ? [{ to: '/dashboard', label: 'Dashboard' }] : [])
+    ...( !isGuest ? [ { to: '/dashboard', label: 'Dashboard' }, { to: '/assignments', label: 'Assignments' } ] : [] )
   ]
-  
+
   // Show admin menu if user has any creation permissions
   // Don't wait for loading to complete - show based on current state
-  const showAdminMenu = !isGuest && !permissionsLoading && (isAdmin || canCreateCourse || canCreateBatch)
-  
+  const showAdminMenu = !isGuest && !permissionsLoading && ( isAdmin || canCreateCourse || canCreateBatch )
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
       {/* Header - Internal Tool Style */}
@@ -63,65 +63,64 @@ export default function MainLayout({ children }) {
                   LMS
                 </span>
               </Link>
-              
+
               <div className="hidden md:flex md:ml-8 md:space-x-1">
-                {navLinks.map((link) => (
+                {navLinks.map( ( link ) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-                      isActive(link.to)
+                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive( link.to )
                         ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
                         : 'text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                      }`}
                   >
                     {link.label}
                   </Link>
-                ))}
+                ) )}
               </div>
             </div>
-            
-                    {/* User menu and ERP link */}
-                    <div className="flex items-center space-x-3">
-                      {/* CREATE COURSE BUTTON - Always visible if you have permission */}
-                      {!isGuest && !permissionsLoading && canCreateCourse && (
-                        <Button
-                          as={Link}
-                          to="/admin/courses/new"
-                          variant="primary"
-                          size="sm"
-                          icon={
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                            </svg>
-                          }
-                          className="hidden sm:flex"
-                        >
-                          Create Course
-                        </Button>
-                      )}
 
-                      {/* Link back to ERP/Desk */}
-                      {!isGuest && (
-                        <a
-                          href="/app"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hidden sm:flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
-                          title="Back to ERP/Desk"
-                        >
-                          <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                          </svg>
-                          ERP
-                        </a>
-                      )}
+            {/* User menu and ERP link */}
+            <div className="flex items-center space-x-3">
+              {/* CREATE COURSE BUTTON - Always visible if you have permission */}
+              {!isGuest && !permissionsLoading && canCreateCourse && (
+                <Button
+                  as={Link}
+                  to="/admin/courses/new"
+                  variant="primary"
+                  size="sm"
+                  icon={
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                  }
+                  className="hidden sm:flex"
+                >
+                  Create Course
+                </Button>
+              )}
 
-                      {/* Admin Menu */}
-                      {showAdminMenu && (
+              {/* Link back to ERP/Desk */}
+              {!isGuest && (
+                <a
+                  href="/app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hidden sm:flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  title="Back to ERP/Desk"
+                >
+                  <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                  </svg>
+                  ERP
+                </a>
+              )}
+
+              {/* Admin Menu */}
+              {showAdminMenu && (
                 <div className="relative">
                   <Button
-                    onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                    onClick={() => setIsAdminMenuOpen( !isAdminMenuOpen )}
                     variant="outline"
                     size="sm"
                     icon={
@@ -132,19 +131,19 @@ export default function MainLayout({ children }) {
                   >
                     Admin
                   </Button>
-                  
+
                   {isAdminMenuOpen && (
                     <>
-                      <div 
-                        className="fixed inset-0 z-10" 
-                        onClick={() => setIsAdminMenuOpen(false)}
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsAdminMenuOpen( false )}
                       />
                       <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 py-1">
                         {canCreateCourse && (
                           <Link
                             to="/admin/courses/new"
                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => setIsAdminMenuOpen(false)}
+                            onClick={() => setIsAdminMenuOpen( false )}
                           >
                             <div className="flex items-center">
                               <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,7 +157,7 @@ export default function MainLayout({ children }) {
                           <Link
                             to="/admin/batches/new"
                             className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => setIsAdminMenuOpen(false)}
+                            onClick={() => setIsAdminMenuOpen( false )}
                           >
                             <div className="flex items-center">
                               <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,11 +171,35 @@ export default function MainLayout({ children }) {
                           <>
                             <div className="border-t border-gray-200 dark:border-gray-700 my-1" />
                             <Link
+                              to="/admin/assignments"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              onClick={() => setIsAdminMenuOpen( false )}
+                            >
+                              <div className="flex items-center">
+                                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                Assignment Dashboard
+                              </div>
+                            </Link>
+                            <Link
+                              to="/admin/assignments/new"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                              onClick={() => setIsAdminMenuOpen( false )}
+                            >
+                              <div className="flex items-center">
+                                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                </svg>
+                                Assign Training
+                              </div>
+                            </Link>
+                            <Link
                               to="/admin/settings"
                               className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                              onClick={() => setIsAdminMenuOpen(false)}
+                              onClick={() => setIsAdminMenuOpen( false )}
                             >
-            <div className="flex items-center">
+                              <div className="flex items-center">
                                 <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -191,19 +214,19 @@ export default function MainLayout({ children }) {
                   )}
                 </div>
               )}
-              
+
               {isGuest ? (
                 <Button as={Link} to="/login" variant="primary" size="sm">
                   Sign In
                 </Button>
               ) : (
                 <>
-                  <Link 
-                    to="/profile" 
+                  <Link
+                    to="/profile"
                     className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <div className="w-7 h-7 bg-gradient-to-br from-primary-600 to-primary-700 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                      {currentUser?.charAt(0)?.toUpperCase() || 'U'}
+                      {currentUser?.charAt( 0 )?.toUpperCase() || 'U'}
                     </div>
                     <span className="hidden lg:block max-w-[120px] truncate">{currentUser}</span>
                   </Link>
@@ -216,10 +239,10 @@ export default function MainLayout({ children }) {
                   </Button>
                 </>
               )}
-              
+
               {/* Mobile menu button */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                onClick={() => setIsMobileMenuOpen( !isMobileMenuOpen )}
                 className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               >
                 <span className="sr-only">Open main menu</span>
@@ -230,25 +253,24 @@ export default function MainLayout({ children }) {
             </div>
           </div>
         </nav>
-        
+
         {/* Mobile menu */}
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="pt-2 pb-3 space-y-1 px-4">
-              {navLinks.map((link) => (
+              {navLinks.map( ( link ) => (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`block px-3 py-2 text-base font-medium rounded-md ${
-                    isActive(link.to)
+                  className={`block px-3 py-2 text-base font-medium rounded-md ${isActive( link.to )
                       ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                    }`}
+                  onClick={() => setIsMobileMenuOpen( false )}
                 >
                   {link.label}
                 </Link>
-              ))}
+              ) )}
               {!isGuest && (
                 <>
                   {showAdminMenu && (
@@ -261,7 +283,7 @@ export default function MainLayout({ children }) {
                         <Link
                           to="/admin/courses/new"
                           className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                          onClick={() => setIsMobileMenuOpen(false)}
+                          onClick={() => setIsMobileMenuOpen( false )}
                         >
                           Create Course
                         </Link>
@@ -270,16 +292,34 @@ export default function MainLayout({ children }) {
                         <Link
                           to="/admin/batches/new"
                           className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                          onClick={() => setIsMobileMenuOpen(false)}
+                          onClick={() => setIsMobileMenuOpen( false )}
                         >
                           Create Batch
                         </Link>
                       )}
                       {isAdmin && (
+                        <>
+                          <Link
+                            to="/admin/assignments"
+                            className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                            onClick={() => setIsMobileMenuOpen( false )}
+                          >
+                            Assignment Dashboard
+                          </Link>
+                          <Link
+                            to="/admin/assignments/new"
+                            className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                            onClick={() => setIsMobileMenuOpen( false )}
+                          >
+                            Assign Training
+                          </Link>
+                        </>
+                      )}
+                      {isAdmin && (
                         <Link
                           to="/admin/settings"
                           className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                          onClick={() => setIsMobileMenuOpen(false)}
+                          onClick={() => setIsMobileMenuOpen( false )}
                         >
                           Settings
                         </Link>
@@ -290,7 +330,7 @@ export default function MainLayout({ children }) {
                   <Link
                     to="/profile"
                     className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setIsMobileMenuOpen( false )}
                   >
                     Profile
                   </Link>
@@ -299,12 +339,12 @@ export default function MainLayout({ children }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => setIsMobileMenuOpen( false )}
                   >
                     Back to ERP
                   </a>
                   <button
-                    onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }}
+                    onClick={() => { handleLogout(); setIsMobileMenuOpen( false ); }}
                     className="block w-full text-left px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                   >
                     Logout
@@ -315,12 +355,12 @@ export default function MainLayout({ children }) {
           </div>
         )}
       </header>
-      
+
       {/* Main content */}
       <main className="flex-1">
         {children}
       </main>
-      
+
       {/* Floating Action Button for Quick Create */}
       <FloatingActionButton />
 

@@ -22,11 +22,15 @@ import Discussions from './pages/Discussions'
 import DiscussionDetail from './pages/DiscussionDetail'
 import Certificates from './pages/Certificates'
 import CertificateDetail from './pages/CertificateDetail'
+import MyAssignments from './pages/MyAssignments'
+import TrainingFeedback from './pages/TrainingFeedback'
 
 // Admin pages
 import CourseForm from './pages/Admin/CourseForm'
 import BatchForm from './pages/Admin/BatchForm'
 import Settings from './pages/Admin/Settings'
+import TrainingAssignment from './pages/Admin/TrainingAssignment'
+import AssignmentDashboard from './pages/Admin/AssignmentDashboard'
 
 function App() {
     return (
@@ -52,6 +56,8 @@ function App() {
                 <Route path="/discussions/:discussionId" element={<ProtectedRoute><MainLayout><DiscussionDetail /></MainLayout></ProtectedRoute>} />
                 <Route path="/certificates" element={<ProtectedRoute><MainLayout><Certificates /></MainLayout></ProtectedRoute>} />
                 <Route path="/certificates/:certificateId" element={<ProtectedRoute><MainLayout><CertificateDetail /></MainLayout></ProtectedRoute>} />
+                <Route path="/assignments" element={<ProtectedRoute><MainLayout><MyAssignments /></MainLayout></ProtectedRoute>} />
+                <Route path="/feedback/:courseId" element={<ProtectedRoute><MainLayout><TrainingFeedback /></MainLayout></ProtectedRoute>} />
 
                 {/* Admin routes */}
                 <Route path="/admin/courses/new" element={<ProtectedRoute><MainLayout><CourseForm /></MainLayout></ProtectedRoute>} />
@@ -59,6 +65,8 @@ function App() {
                 <Route path="/admin/batches/new" element={<ProtectedRoute><MainLayout><BatchForm /></MainLayout></ProtectedRoute>} />
                 <Route path="/admin/batches/:batchId/edit" element={<ProtectedRoute><MainLayout><BatchForm /></MainLayout></ProtectedRoute>} />
                 <Route path="/admin/settings" element={<ProtectedRoute><MainLayout><Settings /></MainLayout></ProtectedRoute>} />
+                <Route path="/admin/assignments" element={<ProtectedRoute><MainLayout><AssignmentDashboard /></MainLayout></ProtectedRoute>} />
+                <Route path="/admin/assignments/new" element={<ProtectedRoute><MainLayout><TrainingAssignment /></MainLayout></ProtectedRoute>} />
 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/" replace />} />

@@ -43,6 +43,7 @@ export default defineConfig({
 function getProxyOptions() {
 	const config = getCommonSiteConfig();
 	const webserver_port = config ? config.webserver_port : 8000;
+	const default_site = config ? config.default_site : null;
 
 	if (!config) {
 		console.log("No common_site_config.json found, using default port 8000");
@@ -51,11 +52,19 @@ function getProxyOptions() {
 	return {
 		"^/(app|login|api|assets|files|private)": {
 			target: `http://127.0.0.1:${webserver_port}`,
+			changeOrigin: true,
 			ws: true,
-			router: function (req) {
-				const site_name = req.headers.host.split(":")[0];
-				console.log(`Proxying ${req.url} to ${site_name}:${webserver_port}`);
-				return `http://${site_name}:${webserver_port}`;
+			configure: (proxy) => {
+				proxy.on("proxyReq", (proxyReq) => {
+					if (default_site) {
+						proxyReq.setHeader("host", default_site);
+					}
+				});
+				proxy.on("proxyReqWs", (proxyReq) => {
+					if (default_site) {
+						proxyReq.setHeader("host", default_site);
+					}
+				});
 			},
 		},
 	};

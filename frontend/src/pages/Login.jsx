@@ -7,38 +7,39 @@ export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
   const { login, currentUser } = useFrappeAuth()
-  const [username, setUsername] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [isLoading, setIsLoading] = React.useState(false)
-  const [error, setError] = React.useState('')
-  const [showPassword, setShowPassword] = React.useState(false)
-  
+  const [ username, setUsername ] = React.useState( '' )
+  const [ password, setPassword ] = React.useState( '' )
+  const [ isLoading, setIsLoading ] = React.useState( false )
+  const [ error, setError ] = React.useState( '' )
+  const [ showPassword, setShowPassword ] = React.useState( false )
+
   // Check if already logged in via Frappe session
-  React.useEffect(() => {
-    if (currentUser && currentUser !== 'Guest') {
+  React.useEffect( () => {
+    if ( currentUser && currentUser !== 'Guest' ) {
       const redirectTo = location.state?.from?.pathname || '/dashboard'
-      navigate(redirectTo, { replace: true })
+      navigate( redirectTo, { replace: true } )
     }
-  }, [currentUser, navigate, location])
-  
-  const handleSubmit = async (e) => {
+  }, [ currentUser, navigate, location ] )
+
+  const handleSubmit = async ( e ) => {
     e.preventDefault()
-    setError('')
-    setIsLoading(true)
-    
+    setError( '' )
+    setIsLoading( true )
+
     try {
-      await login(username, password)
+      console.log( username, password )
+      await login( { username, password } )
       const redirectTo = location.state?.from?.pathname || '/dashboard'
-      navigate(redirectTo, { replace: true })
-    } catch (err) {
-      setError(err.message || 'Invalid username or password')
+      navigate( redirectTo, { replace: true } )
+    } catch ( err ) {
+      setError( err.message || 'Invalid username or password' )
     } finally {
-      setIsLoading(false)
+      setIsLoading( false )
     }
   }
-  
+
   // If user is already logged in, show loading
-  if (currentUser && currentUser !== 'Guest') {
+  if ( currentUser && currentUser !== 'Guest' ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -48,7 +49,7 @@ export default function Login() {
       </div>
     )
   }
-  
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
@@ -61,43 +62,43 @@ export default function Login() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             Waseela LMS
-      </h2>
+          </h2>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             Internal Learning Management System
           </p>
         </div>
-        
+
         {/* Login Card */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-lg p-8">
           {error && (
             <Alert variant="danger" title="Login Failed" className="mb-6">
               {error}
             </Alert>
-      )}
-      
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Username or Email"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+              type="text"
+              value={username}
+              onChange={( e ) => setUsername( e.target.value )}
               placeholder="Enter your Frappe username or email"
-            required
-            autoFocus
+              required
+              autoFocus
               icon={
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               }
             />
-            
+
             <Input
               label="Password"
               type={showPassword ? 'text' : 'password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              onChange={( e ) => setPassword( e.target.value )}
               placeholder="Enter your password"
-            required
+              required
               icon={
                 <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -106,7 +107,7 @@ export default function Login() {
               iconRight={
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword( !showPassword )}
                   className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   {showPassword ? (
@@ -122,18 +123,18 @@ export default function Login() {
                 </button>
               }
             />
-            
+
             <Button
-          type="submit"
-          disabled={isLoading}
+              type="submit"
+              disabled={isLoading}
               loading={isLoading}
               className="w-full"
               size="lg"
-        >
+            >
               Sign In
             </Button>
-      </form>
-      
+          </form>
+
           <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
               Using your existing Frappe/ERPNext credentials

@@ -8,8 +8,11 @@ import {
   useRecommendedCourses
 } from '../hooks/useDashboard'
 import { usePermissions } from '../hooks/usePermissions'
+import { useMyAssignments } from '../hooks/useTrainingAssignment'
 import ProgressBar from '../components/ProgressBar'
 import { Spinner, EmptyState, Button, Card, Badge } from '../components/FrappeUI'
+import AssignmentCard from '../components/AssignmentCard'
+import OverdueBadge from '../components/OverdueBadge'
 import dayjs from 'dayjs'
 
 export default function Dashboard() {
@@ -20,13 +23,17 @@ export default function Dashboard() {
   const { deadlines } = useUpcomingDeadlines()
   const { courses: recommendedCourses } = useRecommendedCourses( 3 )
   const { canCreateCourse, canCreateBatch, isAdmin, isLoading: permissionsLoading } = usePermissions()
+  const { assignments, isLoading: assignmentsLoading } = useMyAssignments()
 
   // Ensure arrays
   const courses = Array.isArray( myCourses ) ? myCourses : []
   const batches = Array.isArray( myBatches ) ? myBatches : []
+  const myAssignments = Array.isArray( assignments ) ? assignments : []
 
   const completedCourses = courses.filter( c => c.is_completed ) || []
   const inProgressCourses = courses.filter( c => !c.is_completed ) || []
+  const overdueAssignments = myAssignments.filter( a => a.is_overdue ) || []
+  const pendingAssignments = myAssignments.filter( a => a.status !== 'Completed' ) || []
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -155,6 +162,38 @@ export default function Dashboard() {
           </div>
         </Card>
       </div>
+
+      {/* My Assignments Section */}
+      {myAssignments.length > 0 && (
+        <section className="mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                My Assignments
+              </h2>
+              <OverdueBadge count={overdueAssignments.length} />
+            </div>
+            <Link
+              to="/assignments"
+              className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+            >
+              View All →
+            </Link>
+          </div>
+
+          {assignmentsLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {pendingAssignments.slice( 0, 3 ).map( ( assignment ) => (
+                <AssignmentCard key={assignment.name} assignment={assignment} />
+              ) )}
+            </div>
+          )}
+        </section>
+      )}
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
