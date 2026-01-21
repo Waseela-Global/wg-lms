@@ -1,2 +1,1 @@
-# API module for Waseela LMS
-
+# API Package

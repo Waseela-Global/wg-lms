@@ -23,7 +23,7 @@ export default function TrainingFeedback() {
 		const result = await submitFeedback( enrollment.name, feedbackType, responses );
 		if ( result.success ) {
 			alert( "Feedback submitted successfully!" );
-			navigate( `/courses/${courseId}` );
+		navigate( `/courses/${courseId || ''}` );
 		} else {
 			alert( result.error || "Failed to submit feedback" );
 		}
@@ -87,7 +87,7 @@ export default function TrainingFeedback() {
 			{form && form.submitted ? (
 				<div className="card p-8 text-center">
 					<svg
-						className="w-16 h-16 mx-auto text-green-600 mb-4"
+						className="w-16 h-16 mx-auto text-success-600 mb-4"
 						fill="currentColor"
 						viewBox="0 0 20 20"
 					>
@@ -103,7 +103,7 @@ export default function TrainingFeedback() {
 					<p className="text-gray-600 dark:text-gray-400 mb-6">
 						Thank you for your feedback!
 					</p>
-					<button onClick={() => navigate( `/courses/${courseId}` )} className="btn btn-primary">
+					<button onClick={() => navigate( `/courses/${courseId || ''}` )} className="btn btn-primary">
 						Back to Course
 					</button>
 				</div>

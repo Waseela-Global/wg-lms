@@ -168,8 +168,15 @@ def submit_feedback(enrollment_id, feedback_type, responses):
 @frappe.whitelist()
 def check_completion_requirements(enrollment_id):
 	"""Check if all completion requirements are met"""
-	if not frappe.db.exists("LMS Enrollment", enrollment_id):
-		frappe.throw(_("Enrollment not found"))
+	if not enrollment_id or not frappe.db.exists("LMS Enrollment", enrollment_id):
+		# For non-enrolled users or missing enrollment, report requirements as not met
+		return {
+			"lessons_completed": False,
+			"quiz_passed": False,
+			"feedback_submitted": False,
+			"all_met": False,
+			"error": _("Enrollment not found")
+		}
 	
 	enrollment = frappe.get_doc("LMS Enrollment", enrollment_id)
 	course = frappe.get_doc("LMS Course", enrollment.course)

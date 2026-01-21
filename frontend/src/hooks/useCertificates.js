@@ -1,85 +1,54 @@
-import { useState, useEffect } from "react";
-import { callAPI } from "../utils/api";
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
+import { API_ENDPOINTS } from "../utils/api";
 
 export function useCertificates() {
-	const [certificates, setCertificates] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_MY_CERTIFICATES,
+		{},
+		"my-certificates",
+		{
+			revalidateOnFocus: false,
+		}
+	);
 
-	useEffect(() => {
-		const fetchCertificates = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.certificates.get_my_certificates");
-				setCertificates(data || []);
-			} catch (err) {
-				setError(err.message || "Failed to load certificates");
-				setCertificates([]);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchCertificates();
-	}, []);
+	const certificates = data?.message || [];
 
 	return { certificates, isLoading, error };
 }
 
 export function useCertificate(certificateId) {
-	const [certificate, setCertificate] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	if (!certificateId) {
+		return { certificate: null, isLoading: false, error: null };
+	}
 
-	useEffect(() => {
-		if (!certificateId) {
-			setIsLoading(false);
-			return;
+	const cacheKey = `certificate-${certificateId}`;
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_CERTIFICATE,
+		{ certificate_id: certificateId },
+		cacheKey,
+		{
+			revalidateOnFocus: false,
 		}
+	);
 
-		const fetchCertificate = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.certificates.get_certificate", {
-					certificate_id: certificateId,
-				});
-				setCertificate(data);
-			} catch (err) {
-				setError(err.message || "Failed to load certificate");
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchCertificate();
-	}, [certificateId]);
+	const certificate = data?.message || null;
 
 	return { certificate, isLoading, error };
 }
 
 export function useGenerateCertificate() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, isLoading, error } = useFrappePostCall(API_ENDPOINTS.GENERATE_CERTIFICATE);
 
 	const generateCertificate = async (courseId) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const certificateId = await callAPI("wg_lms.api.certificates.generate_certificate", {
-				course_id: courseId,
-			});
-			return { success: true, certificateId };
-		} catch (err) {
-			setError(err.message || "Failed to generate certificate");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({ course_id: courseId });
+		const certificateId =
+			typeof message === "string"
+				? message
+				: message?.name || message?.certificate_id || message;
+		return { success: true, certificateId };
 	};
 
-	return { generateCertificate, loading, error };
+	return { generateCertificate, isLoading, error };
 }
 
 export function downloadCertificate(certificateId) {

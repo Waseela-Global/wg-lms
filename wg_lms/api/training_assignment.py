@@ -236,7 +236,7 @@ def get_my_assignments(status=None):
 		})
 		
 		# Check if overdue
-		if assignment.due_date and getdate(assignment.due_date) < today() and assignment.status != "Completed":
+		if assignment.due_date and getdate(assignment.due_date) < getdate(today()) and assignment.status != "Completed":
 			assignment["is_overdue"] = True
 		else:
 			assignment["is_overdue"] = False
@@ -272,7 +272,7 @@ def get_assignment_stats(filters=None):
 	# Calculate stats
 	total = len(assignments)
 	completed = len([a for a in assignments if a.status == "Completed"])
-	overdue = len([a for a in assignments if a.due_date and getdate(a.due_date) < today() and a.status != "Completed"])
+	overdue = len([a for a in assignments if a.due_date and getdate(a.due_date) < getdate(today()) and a.status != "Completed"])
 	in_progress = len([a for a in assignments if a.status == "In Progress"])
 	assigned = len([a for a in assignments if a.status == "Assigned"])
 	
@@ -289,7 +289,7 @@ def get_assignment_stats(filters=None):
 				role_stats[role]["total"] += 1
 				if assignment.status == "Completed":
 					role_stats[role]["completed"] += 1
-				elif assignment.due_date and getdate(assignment.due_date) < today():
+				elif assignment.due_date and getdate(assignment.due_date) < getdate(today()):
 					role_stats[role]["overdue"] += 1
 	
 	# Stats by department
@@ -303,7 +303,7 @@ def get_assignment_stats(filters=None):
 			dept_stats[dept]["total"] += 1
 			if assignment.status == "Completed":
 				dept_stats[dept]["completed"] += 1
-			elif assignment.due_date and getdate(assignment.due_date) < today():
+			elif assignment.due_date and getdate(assignment.due_date) < getdate(today()):
 				dept_stats[dept]["overdue"] += 1
 	
 	return {

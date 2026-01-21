@@ -1,64 +1,41 @@
-import { useState, useEffect } from "react";
-import { callAPI } from "../utils/api";
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
+import { API_ENDPOINTS } from "../utils/api";
 
 export function useMyAssignments(status) {
-	const [assignments, setAssignments] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const { data, error, isLoading } = useFrappeGetCall(
+		API_ENDPOINTS.GET_MY_ASSIGNMENTS,
+		{ status: status },
+		status ? `my-assignments-${status}` : "my-assignments",
+		{
+			revalidateOnFocus: false,
+		}
+	);
 
-	useEffect(() => {
-		const fetchAssignments = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.training_assignment.get_my_assignments", {
-					status: status,
-				});
-				setAssignments(data || []);
-			} catch (err) {
-				setError(err.message || "Failed to load assignments");
-				setAssignments([]);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchAssignments();
-	}, [status]);
+	const assignments = data?.message || [];
 
 	return { assignments, isLoading, error };
 }
 
 export function useAssignTraining() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, error, loading } = useFrappePostCall(API_ENDPOINTS.ASSIGN_TRAINING);
 
+	// Keep a simple positional signature for the component; map to backend field names here.
 	const assignTraining = async (course, assignmentType, filters, dueDate, autoRenewalPeriod) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const result = await callAPI("wg_lms.api.training_assignment.assign_training", {
-				course: course,
-				assignment_type: assignmentType,
-				filters: filters,
-				due_date: dueDate,
-				auto_renewal_period: autoRenewalPeriod || 0,
-			});
-			return { success: true, ...result };
-		} catch (err) {
-			setError(err.message || "Failed to assign training");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({
+			course,
+			assignment_type: assignmentType,
+			filters,
+			due_date: dueDate,
+			auto_renewal_period: autoRenewalPeriod || 0,
+		});
+		return { success: true, ...message };
 	};
 
 	return { assignTraining, loading, error };
 }
 
 export function useBulkAssignTraining() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, error, loading } = useFrappePostCall(API_ENDPOINTS.BULK_ASSIGN_TRAINING);
 
 	const bulkAssignTraining = async (
 		course,
@@ -67,50 +44,82 @@ export function useBulkAssignTraining() {
 		assignmentType,
 		autoRenewalPeriod
 	) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const result = await callAPI("wg_lms.api.training_assignment.bulk_assign_training", {
-				course: course,
-				user_list: userList,
-				due_date: dueDate,
-				assignment_type: assignmentType,
-				auto_renewal_period: autoRenewalPeriod || 0,
-			});
-			return { success: true, ...result };
-		} catch (err) {
-			setError(err.message || "Failed to bulk assign training");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({
+			course,
+			user_list: userList,
+			due_date: dueDate,
+			assignment_type: assignmentType,
+			auto_renewal_period: autoRenewalPeriod || 0,
+		});
+		return { success: true, ...message };
 	};
 
 	return { bulkAssignTraining, loading, error };
 }
 
 export function useAssignmentStats(filters) {
-	const [stats, setStats] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
+	const cacheKey = filters ? `assignment-stats-${JSON.stringify(filters)}` : "assignment-stats";
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_ASSIGNMENT_STATS,
+		{ filters },
+		cacheKey,
+		{
+			revalidateOnFocus: false,
+		}
+	);
 
-	useEffect(() => {
-		const fetchStats = async () => {
-			try {
-				setIsLoading(true);
-				const data = await callAPI("wg_lms.api.training_assignment.get_assignment_stats", {
-					filters: filters,
-				});
-				setStats(data);
-			} catch (err) {
-				console.error("Failed to load assignment stats:", err);
-				setStats(null);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const stats = data?.message || null;
 
-		fetchStats();
-	}, [filters]);
+	return { stats, isLoading, error };
+}
 
-	return { stats, isLoading };
+export function useAssignmentFormData() {
+	const {
+		data: coursesData,
+		isLoading: coursesLoading,
+		error: coursesError,
+	} = useFrappeGetCall(API_ENDPOINTS.GET_COURSES, {}, "assignment-courses", {
+		revalidateOnFocus: false,
+	});
+
+	const {
+		data: rolesData,
+		isLoading: rolesLoading,
+		error: rolesError,
+	} = useFrappeGetCall(API_ENDPOINTS.GET_ROLES, {}, "assignment-roles", {
+		revalidateOnFocus: false,
+	});
+
+	const {
+		data: departmentsData,
+		isLoading: departmentsLoading,
+		error: departmentsError,
+	} = useFrappeGetCall(API_ENDPOINTS.GET_DEPARTMENTS, {}, "assignment-departments", {
+		revalidateOnFocus: false,
+	});
+
+	const {
+		data: usersData,
+		isLoading: usersLoading,
+		error: usersError,
+	} = useFrappeGetCall(API_ENDPOINTS.GET_USERS_FOR_ASSIGNMENT, {}, "assignment-users", {
+		revalidateOnFocus: false,
+	});
+
+	const courses = coursesData?.message || [];
+	const roles = (rolesData?.message || []).map((name) => ({ name }));
+	const departments = (departmentsData?.message || []).map((name) => ({ name }));
+	const users = usersData?.message || [];
+
+	const loading = coursesLoading || rolesLoading || departmentsLoading || usersLoading;
+	const error = coursesError || rolesError || departmentsError || usersError;
+
+	return {
+		courses,
+		roles,
+		departments,
+		users,
+		loading,
+		error,
+	};
 }

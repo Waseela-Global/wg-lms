@@ -68,9 +68,10 @@ class LMSTrainingAssignment(Document):
 			self.status = "In Progress"
 		else:
 			# Check if overdue
-			if self.due_date and getdate(self.due_date) < today():
+			if self.due_date and getdate(self.due_date) < getdate(today()):
 				self.status = "Overdue"
 			else:
 				self.status = "Assigned"
 		
-		self.save(ignore_permissions=True)
+		# Avoid recursive save during on_update; persist status directly
+		frappe.db.set_value("LMS Training Assignment", self.name, "status", self.status, update_modified=False)

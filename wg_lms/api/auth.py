@@ -43,8 +43,12 @@ def get_user_lms_profile(user=None):
 	if not user:
 		user = frappe.session.user
 	
+	# Return error response instead of throwing exception for Guest users
 	if user == "Guest":
-		frappe.throw(_("Please login to access your profile"))
+		return {
+			"error": "Not authenticated",
+			"message": "Please login to access your profile"
+		}
 	
 	user_doc = frappe.get_cached_doc("User", user)
 	user_roles = frappe.get_roles(user)
@@ -89,4 +93,24 @@ def has_app_permission(user=None):
 	user_roles = frappe.get_roles(user)
 	
 	return any(role in lms_roles for role in user_roles)
+
+
+@frappe.whitelist(allow_guest=True)
+def custom_web_logout():
+	frappe.local.login_manager.logout()
+	frappe.db.commit()
+	
+	if not frappe.local.response.headers:
+		frappe.local.response.headers = {}
+	
+	frappe.local.response.headers.update({
+		'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+		'Pragma': 'no-cache',
+		'Expires': '0'
+	})
+	
+	return {
+		"message": "Logged out successfully",
+		"redirect": "/lms/login"
+	}
 

@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAssignTraining, useBulkAssignTraining } from "../../hooks/useTrainingAssignment";
-import { useCourses } from "../../hooks/useCategories";
-import { callAPI } from "../../utils/api";
+import { useAssignTraining, useBulkAssignTraining, useAssignmentFormData } from "../../hooks/useTrainingAssignment";
 import dayjs from "dayjs";
 
 export default function TrainingAssignment() {
 	const navigate = useNavigate();
-	const { assignTraining, loading: assigning } = useAssignTraining();
+	const { assignTraining, loading: assigning, error: assignError } = useAssignTraining();
 	const { bulkAssignTraining, loading: bulkAssigning } = useBulkAssignTraining();
 
-	const [ courses, setCourses ] = useState( [] );
+	const { courses, roles, departments, users, loading: metaLoading, error: metaError } = useAssignmentFormData();
 	const [ selectedCourse, setSelectedCourse ] = useState( "" );
 	const [ assignmentType, setAssignmentType ] = useState( "Mandatory" );
 	const [ dueDate, setDueDate ] = useState( dayjs().add( 30, "days" ).format( "YYYY-MM-DD" ) );
@@ -25,57 +23,28 @@ export default function TrainingAssignment() {
 	const [ selectedUsers, setSelectedUsers ] = useState( [] );
 	const [ bulkUserList, setBulkUserList ] = useState( "" );
 
-	// Options
-	const [ roles, setRoles ] = useState( [] );
-	const [ departments, setDepartments ] = useState( [] );
-	const [ users, setUsers ] = useState( [] );
+	if ( metaLoading ) {
+		return (
+			<div className="flex justify-center items-center min-h-screen">
+				<div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-200 border-t-primary-600"></div>
+			</div>
+		);
+	}
 
-	useEffect( () => {
-		fetchCourses();
-		fetchRoles();
-		fetchDepartments();
-		fetchUsers();
-	}, [] );
-
-	const fetchCourses = async () => {
-		try {
-			const data = await callAPI( "wg_lms.api.courses.get_courses", {} );
-			setCourses( data || [] );
-		} catch ( err ) {
-			console.error( "Failed to load courses:", err );
-		}
-	};
-
-	const fetchRoles = async () => {
-		try {
-			const data = await callAPI( "wg_lms.api.helpers.get_roles" );
-			setRoles( ( data || [] ).map( ( name ) => ( { name } ) ) );
-		} catch ( err ) {
-			console.error( "Failed to load roles:", err );
-		}
-	};
-
-	const fetchDepartments = async () => {
-		try {
-			const data = await callAPI( "wg_lms.api.helpers.get_departments" );
-			setDepartments( ( data || [] ).map( ( name ) => ( { name } ) ) );
-		} catch ( err ) {
-			console.error( "Failed to load departments:", err );
-		}
-	};
-
-	const fetchUsers = async () => {
-		try {
-			const data = await callAPI( "wg_lms.api.helpers.get_users_for_assignment" );
-			setUsers( data || [] );
-		} catch ( err ) {
-			console.error( "Failed to load users:", err );
-		}
-	};
+	if ( metaError ) {
+		return (
+			<div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				<div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-6 text-center">
+					<h2 className="text-xl font-bold text-red-900 dark:text-red-100 mb-2">Failed to load data</h2>
+					<p className="text-red-700 dark:text-red-300">Unable to load courses, roles, departments, or users.</p>
+				</div>
+			</div>
+		);
+	}
 
 	const handleSubmit = async ( e ) => {
 		e.preventDefault();
-
+		console.log( "🔥 ~ handleSubmit ~ selectedCourse: ", assignmentMethod )
 		if ( !selectedCourse ) {
 			alert( "Please select a course" );
 			return;
@@ -108,7 +77,13 @@ export default function TrainingAssignment() {
 				return;
 			}
 
-			result = await assignTraining( selectedCourse, assignmentType, filters, dueDate, autoRenewalPeriod );
+			result = await assignTraining(
+				selectedCourse,
+				assignmentType,
+				filters,
+				dueDate,
+				autoRenewalPeriod
+			);
 		}
 
 		if ( result.success ) {
@@ -172,8 +147,8 @@ export default function TrainingAssignment() {
 								type="button"
 								onClick={() => setAssignmentMethod( method )}
 								className={`px-4 py-2 rounded-lg text-sm font-medium capitalize ${assignmentMethod === method
-										? "bg-primary-600 text-white"
-										: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+									? "bg-primary-600 text-white"
+									: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
 									}`}
 							>
 								{method}

@@ -1,29 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAssignmentStats } from "../../hooks/useTrainingAssignment";
-import { callAPI } from "../../utils/api";
+import { usePermissions } from "../../hooks/usePermissions";
+import { useCourses } from "../../hooks/useCourse";
 
 export default function AssignmentDashboard() {
 	const navigate = useNavigate();
 	const [ courseFilter, setCourseFilter ] = useState( null );
 	const [ statusFilter, setStatusFilter ] = useState( null );
-	const { stats, isLoading } = useAssignmentStats( {
+	const { stats, isLoading, error: assignmentStatsError, call: fetchAssignmentStats } = useAssignmentStats( {
 		course: courseFilter,
 		status: statusFilter,
 	} );
-	const [ courses, setCourses ] = useState( [] );
-
-	useEffect( () => {
-		const fetchCourses = async () => {
-			try {
-				const data = await callAPI( "wg_lms.api.courses.get_courses", {} );
-				setCourses( data || [] );
-			} catch ( err ) {
-				console.error( "Failed to load courses:", err );
-			}
-		};
-		fetchCourses();
-	}, [] );
+	const { isAdmin, canCreateCourse } = usePermissions();
+	const { courses, isLoading: coursesLoading } = useCourses();
+	if ( !isAdmin && !canCreateCourse ) {
+		return (
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+				<div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-6 text-center">
+					<h2 className="text-xl font-bold text-red-900 dark:text-red-100 mb-2">Access Denied</h2>
+					<p className="text-red-700 dark:text-red-300">You don't have permission to access the assignment dashboard.</p>
+				</div>
+			</div>
+		);
+	}
 
 	if ( isLoading ) {
 		return (
@@ -101,7 +101,7 @@ export default function AssignmentDashboard() {
 						<div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
 					</div>
 					<div className="card p-4 text-center">
-						<div className="text-2xl font-bold text-green-600 dark:text-green-400">
+						<div className="text-2xl font-bold text-success-600 dark:text-success-400">
 							{stats.overall.completed}
 						</div>
 						<div className="text-sm text-gray-600 dark:text-gray-400">Completed</div>
@@ -164,7 +164,7 @@ export default function AssignmentDashboard() {
 										<td className="py-3 px-4 text-right text-gray-600 dark:text-gray-400">
 											{data.total}
 										</td>
-										<td className="py-3 px-4 text-right text-green-600 dark:text-green-400">
+										<td className="py-3 px-4 text-right text-success-600 dark:text-success-400">
 											{data.completed}
 										</td>
 										<td className="py-3 px-4 text-right text-red-600 dark:text-red-400">
@@ -221,7 +221,7 @@ export default function AssignmentDashboard() {
 										<td className="py-3 px-4 text-right text-gray-600 dark:text-gray-400">
 											{data.total}
 										</td>
-										<td className="py-3 px-4 text-right text-green-600 dark:text-green-400">
+										<td className="py-3 px-4 text-right text-success-600 dark:text-success-400">
 											{data.completed}
 										</td>
 										<td className="py-3 px-4 text-right text-red-600 dark:text-red-400">

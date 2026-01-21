@@ -7,7 +7,7 @@ class LMSEnrollment(Document):
 	def validate(self):
 		"""Update overdue status"""
 		if self.due_date and not self.is_completed:
-			self.is_overdue = getdate(self.due_date) < today()
+			self.is_overdue = getdate(self.due_date) < getdate(today())
 		else:
 			self.is_overdue = 0
 	
@@ -26,4 +26,7 @@ class LMSEnrollment(Document):
 				assignment = frappe.get_doc("LMS Training Assignment", self.assignment)
 				assignment.update_status()
 			except Exception as e:
-				frappe.log_error(f"Error updating assignment status: {e}")
+				frappe.log_error(
+					message=frappe.get_traceback(),
+					title="LMS Enrollment: assignment status update failed"
+				)

@@ -2,26 +2,54 @@ import frappe
 from frappe import _
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_lesson(lesson):
-	"""Get lesson content"""
+	"""Get lesson content - allows view-only access for non-enrolled users"""
 	user = frappe.session.user
 	
-	if not frappe.db.exists("Course Lesson", lesson):
-		frappe.throw(_("Lesson not found"))
+	if not lesson:
+		frappe.throw(_("Lesson ID is required"))
 	
-	lesson_doc = frappe.get_doc("Course Lesson", lesson)
+	# Try to find lesson - handle URL-encoded names
+	lesson_name = lesson
+	if not frappe.db.exists("Course Lesson", lesson_name):
+		# Try URL-decoding if it contains encoded characters
+		import urllib.parse
+		decoded_lesson = urllib.parse.unquote(lesson_name)
+		if decoded_lesson != lesson_name and frappe.db.exists("Course Lesson", decoded_lesson):
+			lesson_name = decoded_lesson
+		else:
+			# Try finding by title if name doesn't work
+			lesson_by_title = frappe.db.get_value("Course Lesson", {"title": lesson_name}, "name")
+			if lesson_by_title:
+				lesson_name = lesson_by_title
+			else:
+				frappe.throw(_("Lesson not found: {0}").format(lesson))
 	
-	# Check if user has access
-	if not lesson_doc.include_in_preview:
-		if user == "Guest":
-			frappe.throw(_("Please login to access this lesson"))
-		
-		# Check if enrolled in the course
-		if not frappe.db.exists("LMS Enrollment", {"student": user, "course": lesson_doc.course}):
-			frappe.throw(_("Please enroll in the course to access this lesson"))
+	if not frappe.db.exists("Course Lesson", lesson_name):
+		frappe.throw(_("Lesson not found: {0}").format(lesson))
 	
-	return {
+	lesson_doc = frappe.get_doc("Course Lesson", lesson_name)
+	
+	# Check if user is instructor or admin
+	user_roles = frappe.get_roles(user)
+	is_instructor = "Instructor" in user_roles or "LMS Admin" in user_roles or user == "Administrator"
+	is_enrolled = False
+	is_view_only = False
+	
+	# Check enrollment status
+	if user != "Guest":
+		is_enrolled = frappe.db.exists("LMS Enrollment", {"student": user, "course": lesson_doc.course})
+	
+	# Determine access level - always allow view, but mark as view-only if not enrolled
+	if user == "Guest" and not lesson_doc.include_in_preview:
+		frappe.throw(_("Please login to access this lesson"))
+	
+	# If not enrolled and not instructor/admin, show in view-only mode
+	if not is_enrolled and not is_instructor:
+		is_view_only = True
+	
+	result = {
 		"name": lesson_doc.name,
 		"title": lesson_doc.title,
 		"chapter": lesson_doc.chapter,
@@ -29,8 +57,17 @@ def get_lesson(lesson):
 		"content": lesson_doc.content,
 		"youtube_url": lesson_doc.youtube_url,
 		"quiz_id": lesson_doc.quiz_id,
-		"assignment_id": lesson_doc.assignment_id
+		"assignment_id": lesson_doc.assignment_id,
+		"include_in_preview": lesson_doc.include_in_preview,
+		"is_enrolled": is_enrolled,
+		"is_view_only": is_view_only
 	}
+	
+	# Include instructor notes only for instructors/admins
+	if is_instructor and lesson_doc.instructor_notes:
+		result["instructor_notes"] = lesson_doc.instructor_notes
+	
+	return result
 
 
 @frappe.whitelist()

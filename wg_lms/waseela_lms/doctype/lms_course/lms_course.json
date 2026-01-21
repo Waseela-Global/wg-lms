@@ -1,260 +1,280 @@
 {
-  "actions": [],
-  "allow_rename": 1,
-  "autoname": "field:title",
-  "creation": "2025-11-17 00:00:00.000000",
-  "doctype": "DocType",
-  "engine": "InnoDB",
-  "field_order": [
-    "title",
-    "short_introduction",
-    "description",
-    "column_break_1",
-    "category",
-    "image",
-    "video_link",
-    "section_break_2",
-    "published",
-    "featured",
-    "enable_certificate",
-    "is_optional",
-    "assignment_section",
-    "assignment_auto_renewal",
-    "completion_rules",
-    "mandatory_for_roles",
-    "mandatory_for_departments",
-    "instructors_section",
-    "instructors",
-    "chapters_section",
-    "chapters",
-    "tags_section",
-    "tags",
-    "statistics_section",
-    "total_enrollments",
-    "total_lessons",
-    "average_rating"
-  ],
-  "fields": [
-    {
-      "fieldname": "title",
-      "fieldtype": "Data",
-      "in_list_view": 1,
-      "label": "Title",
-      "reqd": 1,
-      "unique": 1
-    },
-    {
-      "fieldname": "short_introduction",
-      "fieldtype": "Small Text",
-      "label": "Short Introduction",
-      "reqd": 1
-    },
-    {
-      "fieldname": "description",
-      "fieldtype": "Text Editor",
-      "label": "Description",
-      "reqd": 1
-    },
-    {
-      "fieldname": "column_break_1",
-      "fieldtype": "Column Break"
-    },
-    {
-      "fieldname": "category",
-      "fieldtype": "Link",
-      "label": "Category",
-      "options": "LMS Category"
-    },
-    {
-      "fieldname": "image",
-      "fieldtype": "Attach Image",
-      "label": "Image"
-    },
-    {
-      "fieldname": "video_link",
-      "fieldtype": "Data",
-      "label": "Intro Video URL"
-    },
-    {
-      "fieldname": "section_break_2",
-      "fieldtype": "Section Break"
-    },
-    {
-      "default": "0",
-      "fieldname": "published",
-      "fieldtype": "Check",
-      "label": "Published"
-    },
-    {
-      "default": "0",
-      "fieldname": "featured",
-      "fieldtype": "Check",
-      "label": "Featured"
-    },
-    {
-      "default": "0",
-      "fieldname": "enable_certificate",
-      "fieldtype": "Check",
-      "label": "Enable Certificate"
-    },
-    {
-      "default": "0",
-      "fieldname": "is_optional",
-      "fieldtype": "Check",
-      "label": "Is Optional",
-      "description": "Mark as voluntary/optional training"
-    },
-    {
-      "collapsible": 1,
-      "fieldname": "assignment_section",
-      "fieldtype": "Section Break",
-      "label": "Assignment & Completion Rules"
-    },
-    {
-      "fieldname": "assignment_auto_renewal",
-      "fieldtype": "Int",
-      "label": "Auto Renewal Period (months)",
-      "default": "0",
-      "description": "Auto-reassign this training every N months (0 = no renewal)"
-    },
-    {
-      "fieldname": "completion_rules",
-      "fieldtype": "JSON",
-      "label": "Completion Rules (JSON)",
-      "description": "{\"quiz_required\": bool, \"feedback_required\": bool, \"min_quiz_score\": int}"
-    },
-    {
-      "fieldname": "mandatory_for_roles",
-      "fieldtype": "Table",
-      "options": "LMS Mandatory Role",
-      "label": "Mandatory for Roles"
-    },
-    {
-      "fieldname": "mandatory_for_departments",
-      "fieldtype": "Table",
-      "options": "LMS Mandatory Department",
-      "label": "Mandatory for Departments"
-    },
-    {
-      "collapsible": 1,
-      "fieldname": "instructors_section",
-      "fieldtype": "Section Break",
-      "label": "Instructors"
-    },
-    {
-      "fieldname": "instructors",
-      "fieldtype": "Table",
-      "label": "Instructors",
-      "options": "LMS Course Instructor"
-    },
-    {
-      "collapsible": 1,
-      "fieldname": "chapters_section",
-      "fieldtype": "Section Break",
-      "label": "Chapters"
-    },
-    {
-      "fieldname": "chapters",
-      "fieldtype": "Table",
-      "label": "Chapters",
-      "options": "LMS Chapter Reference"
-    },
-    {
-      "collapsible": 1,
-      "fieldname": "tags_section",
-      "fieldtype": "Section Break",
-      "label": "Tags"
-    },
-    {
-      "fieldname": "tags",
-      "fieldtype": "Data",
-      "label": "Tags (comma-separated)"
-    },
-    {
-      "collapsible": 1,
-      "fieldname": "statistics_section",
-      "fieldtype": "Section Break",
-      "label": "Statistics",
-      "read_only": 1
-    },
-    {
-      "default": "0",
-      "fieldname": "total_enrollments",
-      "fieldtype": "Int",
-      "label": "Total Enrollments",
-      "read_only": 1
-    },
-    {
-      "default": "0",
-      "fieldname": "total_lessons",
-      "fieldtype": "Int",
-      "label": "Total Lessons",
-      "read_only": 1
-    },
-    {
-      "default": "0",
-      "fieldname": "average_rating",
-      "fieldtype": "Float",
-      "label": "Average Rating",
-      "read_only": 1
-    }
-  ],
-  "index_web_pages_for_search": 1,
-  "links": [],
-  "modified": "2025-11-17 00:00:00.000000",
-  "modified_by": "Administrator",
-  "module": "Waseela LMS",
-  "name": "LMS Course",
-  "naming_rule": "By fieldname",
-  "owner": "Administrator",
-  "permissions": [
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "LMS Admin",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Course Creator",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "create": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Instructor",
-      "share": 1,
-      "write": 1
-    },
-    {
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "read": 1,
-      "report": 1,
-      "role": "Student"
-    }
-  ],
-  "sort_field": "modified",
-  "sort_order": "DESC",
-  "states": [],
-  "track_changes": 1,
-  "title_field": "title"
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:name",
+ "creation": "2025-11-17 00:00:00",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "title",
+  "short_introduction",
+  "description",
+  "column_break_1",
+  "category",
+  "image",
+  "video_link",
+  "section_break_2",
+  "published",
+  "featured",
+  "enable_certificate",
+  "is_optional",
+  "assignment_section",
+  "assignment_auto_renewal",
+  "completion_rules",
+  "mandatory_for_roles",
+  "mandatory_for_departments",
+  "instructors_section",
+  "instructors",
+  "chapters_section",
+  "chapters",
+  "tags_section",
+  "tags",
+  "statistics_section",
+  "total_enrollments",
+  "total_lessons",
+  "average_rating",
+  "section_break_ejnr",
+  "availability",
+  "module_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "short_introduction",
+   "fieldtype": "Small Text",
+   "label": "Short Introduction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "LMS Category"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "video_link",
+   "fieldtype": "Data",
+   "label": "Intro Video URL"
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Published"
+  },
+  {
+   "default": "0",
+   "fieldname": "featured",
+   "fieldtype": "Check",
+   "label": "Featured"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_certificate",
+   "fieldtype": "Check",
+   "label": "Enable Certificate"
+  },
+  {
+   "default": "0",
+   "description": "Mark as voluntary/optional training",
+   "fieldname": "is_optional",
+   "fieldtype": "Check",
+   "label": "Is Optional"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "assignment_section",
+   "fieldtype": "Section Break",
+   "label": "Assignment & Completion Rules"
+  },
+  {
+   "default": "0",
+   "description": "Auto-reassign this training every N months (0 = no renewal)",
+   "fieldname": "assignment_auto_renewal",
+   "fieldtype": "Int",
+   "label": "Auto Renewal Period (months)"
+  },
+  {
+   "description": "{\"quiz_required\": bool, \"feedback_required\": bool, \"min_quiz_score\": int}",
+   "fieldname": "completion_rules",
+   "fieldtype": "JSON",
+   "label": "Completion Rules (JSON)"
+  },
+  {
+   "fieldname": "mandatory_for_roles",
+   "fieldtype": "Table",
+   "label": "Mandatory for Roles",
+   "options": "LMS Mandatory Role"
+  },
+  {
+   "fieldname": "mandatory_for_departments",
+   "fieldtype": "Table",
+   "label": "Mandatory for Departments",
+   "options": "LMS Mandatory Department"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "instructors_section",
+   "fieldtype": "Section Break",
+   "label": "Instructors"
+  },
+  {
+   "fieldname": "instructors",
+   "fieldtype": "Table",
+   "label": "Instructors",
+   "options": "LMS Course Instructor"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "chapters_section",
+   "fieldtype": "Section Break",
+   "label": "Chapters"
+  },
+  {
+   "fieldname": "chapters",
+   "fieldtype": "Table",
+   "label": "Chapters",
+   "options": "LMS Chapter Reference"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "tags_section",
+   "fieldtype": "Section Break",
+   "label": "Tags"
+  },
+  {
+   "fieldname": "tags",
+   "fieldtype": "Data",
+   "label": "Tags (comma-separated)"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "statistics_section",
+   "fieldtype": "Section Break",
+   "label": "Statistics",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_enrollments",
+   "fieldtype": "Int",
+   "label": "Total Enrollments",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "total_lessons",
+   "fieldtype": "Int",
+   "label": "Total Lessons",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "average_rating",
+   "fieldtype": "Float",
+   "label": "Average Rating",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ejnr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "availability",
+   "fieldtype": "Select",
+   "label": "Availiable For",
+   "options": "\nDoctype\nWebpage\nReport"
+  },
+  {
+   "fieldname": "module_list",
+   "fieldtype": "Table",
+   "label": "Module List",
+   "options": "User Type Module"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-01-21 14:48:23.397008",
+ "modified_by": "saad.khan@waseela.global",
+ "module": "Waseela LMS",
+ "name": "LMS Course",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "LMS Admin",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Course Creator",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Instructor",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Student"
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
 }

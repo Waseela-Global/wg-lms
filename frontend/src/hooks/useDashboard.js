@@ -1,7 +1,7 @@
 import { useFrappeGetCall } from "frappe-react-sdk";
 
 export function useDashboardStats() {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		"wg_lms.api.dashboard.get_dashboard_stats",
 		{},
 		"dashboard-stats",
@@ -25,12 +25,11 @@ export function useDashboardStats() {
 		},
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }
 
 export function useRecentActivity(limit = 10) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		"wg_lms.api.dashboard.get_recent_activity",
 		{ limit },
 		`recent-activity-${limit}`,
@@ -46,12 +45,11 @@ export function useRecentActivity(limit = 10) {
 		activities: data || [],
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }
 
 export function useUpcomingDeadlines() {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		"wg_lms.api.dashboard.get_upcoming_deadlines",
 		{},
 		"upcoming-deadlines",
@@ -64,12 +62,11 @@ export function useUpcomingDeadlines() {
 		deadlines: data || [],
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }
 
 export function useLearningAnalytics(days = 30) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		"wg_lms.api.dashboard.get_learning_analytics",
 		{ days },
 		`learning-analytics-${days}`,
@@ -85,12 +82,11 @@ export function useLearningAnalytics(days = 30) {
 		},
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }
 
 export function useRecommendedCourses(limit = 6) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		"wg_lms.api.dashboard.get_recommended_courses",
 		{ limit },
 		`recommended-courses-${limit}`,
@@ -106,6 +102,5 @@ export function useRecommendedCourses(limit = 6) {
 		courses: data || [],
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }

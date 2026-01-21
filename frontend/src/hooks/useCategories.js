@@ -1,14 +1,9 @@
 import { useFrappeGetCall } from "frappe-react-sdk";
 
 export function useCategories() {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
-		"frappe.client.get_list",
-		{
-			doctype: "LMS Category",
-			fields: ["name", "title"],
-			filters: { published: 1 },
-			order_by: "title asc",
-		},
+	const { data, error, isLoading } = useFrappeGetCall(
+		"wg_lms.api.courses.get_categories",
+		{},
 		"lms-categories",
 		{
 			revalidateOnFocus: false,
@@ -32,12 +27,11 @@ export function useCategories() {
 		categories,
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }
 
 export function useCourses() {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading, call } = useFrappeGetCall(
 		"wg_lms.api.courses.get_courses",
 		{},
 		"lms-courses",
@@ -61,6 +55,5 @@ export function useCourses() {
 		courses,
 		isLoading,
 		error,
-		refetch: mutate,
 	};
 }

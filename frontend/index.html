@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Waseela LMS</title>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Waseela LMS</title>
 	<link rel="icon" type="image/svg+xml" href="/assets/wg_lms/images/lms-logo.svg" />
-  </head>
+</head>
+
 <body class="antialiased">
-    <div id="root"></div>
-	
+	<div id="root"></div>
+
 	<script>
 		window.csrf_token = "{{ csrf_token }}";
 		window.site_name = '{{ site_name }}';
-		if (!window.frappe) window.frappe = {};
+		if ( !window.frappe ) window.frappe = {};
 		frappe.boot = {{ boot }};
 	</script>
-	
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+
+	<script type="module" src="/src/main.jsx"></script>
+</body>
+
 </html>

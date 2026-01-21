@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useAddReply } from '../hooks/useDiscussions'
-import { callAPI } from '../utils/api'
 
 dayjs.extend( relativeTime )
 
@@ -13,7 +12,7 @@ export default function DiscussionReply( { reply, discussionOwner, onReplyAdded 
 
   const handleMarkAsSolution = async () => {
     try {
-      await callAPI( 'wg_lms.api.discussions.mark_reply_as_solution', { reply_id: reply.name } )
+      await addReply( reply.name, 'solution' )
       if ( onReplyAdded ) onReplyAdded()
     } catch ( err ) {
       alert( err.message || 'Failed to mark as solution' )
@@ -34,8 +33,8 @@ export default function DiscussionReply( { reply, discussionOwner, onReplyAdded 
 
   return (
     <div className={`p-4 rounded-lg mb-4 ${reply.is_solution
-        ? 'bg-green-50 dark:bg-green-900/20 border-2 border-green-500'
-        : 'bg-gray-50 dark:bg-gray-800'
+      ? 'bg-success-50 dark:bg-success-900/20 border-2 border-success-500'
+      : 'bg-gray-50 dark:bg-gray-800'
       }`}>
       <div className="flex items-start gap-3">
         {reply.owner_image ? (
@@ -57,7 +56,7 @@ export default function DiscussionReply( { reply, discussionOwner, onReplyAdded 
                 {reply.owner_name}
               </span>
               {reply.is_solution && (
-                <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 rounded">
+                <span className="px-2 py-1 text-xs font-medium bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-300 rounded">
                   Solution
                 </span>
               )}

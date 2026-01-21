@@ -51,7 +51,7 @@ export default function MyAssignments() {
 				</div>
 				<div className="card p-4">
 					<div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Completed</div>
-					<div className="text-2xl font-bold text-green-600 dark:text-green-400">
+					<div className="text-2xl font-bold text-success-600 dark:text-success-400">
 						{completedCount}
 					</div>
 				</div>

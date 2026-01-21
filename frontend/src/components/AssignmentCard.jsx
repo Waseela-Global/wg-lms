@@ -9,7 +9,7 @@ export default function AssignmentCard( { assignment } ) {
 
 	return (
 		<div
-			onClick={() => navigate( `/courses/${assignment.course}` )}
+			onClick={() => navigate( `/courses/${assignment.course || ''}` )}
 			className={`card p-6 cursor-pointer hover:shadow-lg transition-shadow ${isOverdue ? "border-l-4 border-red-500" : ""
 				}`}
 		>
@@ -35,7 +35,7 @@ export default function AssignmentCard( { assignment } ) {
 						</h3>
 						<span
 							className={`px-3 py-1 rounded-full text-xs font-medium ${assignment.status === "Completed"
-									? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+									? "bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-300"
 									: isOverdue
 										? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
 										: assignment.status === "In Progress"

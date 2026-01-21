@@ -1,51 +1,43 @@
-import { useState, useEffect } from "react";
-import { callAPI } from "../utils/api";
+import { useState } from "react";
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
+import { API_ENDPOINTS } from "../utils/api";
 
 export function useQuiz(quizId) {
-	const [quiz, setQuiz] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
-
-	useEffect(() => {
-		if (!quizId) {
-			setIsLoading(false);
-			return;
+	// Always call hooks in the same order - use empty string if quizId is null/undefined
+	const validQuizId = quizId || "";
+	
+	const cacheKey = validQuizId ? `quiz-${validQuizId}` : null;
+	const { data, isLoading, error, mutate } = useFrappeGetCall(
+		API_ENDPOINTS.GET_QUIZ,
+		validQuizId ? { quiz_id: validQuizId } : null,
+		cacheKey,
+		{
+			revalidateOnFocus: false,
+			shouldFetch: !!validQuizId,
 		}
+	);
 
-		const fetchQuiz = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.quizzes.get_quiz", { quiz_id: quizId });
-				setQuiz(data);
-			} catch (err) {
-				setError(err.message || "Failed to load quiz");
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const quiz = data?.message || null;
 
-		fetchQuiz();
-	}, [quizId]);
-
-	return { quiz, isLoading, error };
+	return { quiz, isLoading, error, mutate };
 }
 
 export function useStartQuiz() {
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const { call, loading } = useFrappePostCall(API_ENDPOINTS.START_QUIZ);
 
 	const startQuiz = async (quizId) => {
 		try {
-			setLoading(true);
 			setError(null);
-			const attemptId = await callAPI("wg_lms.api.quizzes.start_quiz", { quiz_id: quizId });
+			const { message } = await call({ quiz_id: quizId });
+			const attemptId =
+				typeof message === "string"
+					? message
+					: message?.attempt_id || message?.name || message;
 			return { success: true, attemptId };
 		} catch (err) {
 			setError(err.message || "Failed to start quiz");
 			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -53,23 +45,20 @@ export function useStartQuiz() {
 }
 
 export function useSubmitQuiz() {
-	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(null);
+	const { call, loading } = useFrappePostCall(API_ENDPOINTS.SUBMIT_QUIZ);
 
 	const submitQuiz = async (attemptId, answers) => {
 		try {
-			setLoading(true);
 			setError(null);
-			const result = await callAPI("wg_lms.api.quizzes.submit_quiz", {
+			const { message } = await call({
 				attempt_id: attemptId,
-				answers: answers,
+				answers,
 			});
-			return { success: true, ...result };
+			return { success: true, ...message };
 		} catch (err) {
 			setError(err.message || "Failed to submit quiz");
 			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -77,62 +66,41 @@ export function useSubmitQuiz() {
 }
 
 export function useQuizResults(quizId) {
-	const [results, setResults] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		if (!quizId) {
-			setIsLoading(false);
-			return;
+	// Always call hooks in the same order - use empty string if quizId is null/undefined
+	const validQuizId = quizId || "";
+	
+	const cacheKey = validQuizId ? `quiz-results-${validQuizId}` : null;
+	const { data, isLoading, error, mutate } = useFrappeGetCall(
+		API_ENDPOINTS.GET_QUIZ_RESULTS,
+		validQuizId ? { quiz_id: validQuizId } : null,
+		cacheKey,
+		{
+			revalidateOnFocus: false,
+			shouldFetch: !!validQuizId,
 		}
+	);
 
-		const fetchResults = async () => {
-			try {
-				setIsLoading(true);
-				const data = await callAPI("wg_lms.api.quizzes.get_quiz_results", {
-					quiz_id: quizId,
-				});
-				setResults(data || []);
-			} catch (err) {
-				console.error("Failed to load quiz results:", err);
-				setResults([]);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const results = data?.message || [];
 
-		fetchResults();
-	}, [quizId]);
-
-	return { results, isLoading };
+	return { results, isLoading, error, mutate };
 }
 
 export function useQuizAttempt(attemptId) {
-	const [attempt, setAttempt] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-
-	useEffect(() => {
-		if (!attemptId) {
-			setIsLoading(false);
-			return;
+	// Always call hooks in the same order - use empty string if attemptId is null/undefined
+	const validAttemptId = attemptId || "";
+	
+	const cacheKey = validAttemptId ? `quiz-attempt-${validAttemptId}` : null;
+	const { data, isLoading, error, mutate } = useFrappeGetCall(
+		API_ENDPOINTS.GET_QUIZ_ATTEMPT,
+		validAttemptId ? { attempt_id: validAttemptId } : null,
+		cacheKey,
+		{
+			revalidateOnFocus: false,
+			shouldFetch: !!validAttemptId,
 		}
+	);
 
-		const fetchAttempt = async () => {
-			try {
-				setIsLoading(true);
-				const data = await callAPI("wg_lms.api.quizzes.get_quiz_attempt", {
-					attempt_id: attemptId,
-				});
-				setAttempt(data);
-			} catch (err) {
-				console.error("Failed to load quiz attempt:", err);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const attempt = data?.message || null;
 
-		fetchAttempt();
-	}, [attemptId]);
-
-	return { attempt, isLoading };
+	return { attempt, isLoading, error, mutate };
 }

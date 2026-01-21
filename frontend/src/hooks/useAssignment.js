@@ -1,89 +1,53 @@
-import { useState, useEffect } from "react";
-import { callAPI } from "../utils/api";
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
+import { API_ENDPOINTS } from "../utils/api";
 
 export function useAssignment(assignmentId) {
-	const [assignment, setAssignment] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	if (!assignmentId) {
+		return { assignment: null, isLoading: false, error: null };
+	}
 
-	const fetchAssignment = async () => {
-		if (!assignmentId) {
-			setIsLoading(false);
-			return;
+	const cacheKey = `assignment-${assignmentId}`;
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_ASSIGNMENT,
+		{ assignment_id: assignmentId },
+		cacheKey,
+		{
+			revalidateOnFocus: false,
 		}
+	);
 
-		try {
-			setIsLoading(true);
-			setError(null);
-			const data = await callAPI("wg_lms.api.assignments.get_assignment", {
-				assignment_id: assignmentId,
-			});
-			setAssignment(data);
-		} catch (err) {
-			setError(err.message || "Failed to load assignment");
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	const assignment = data?.message || null;
 
-	useEffect(() => {
-		fetchAssignment();
-	}, [assignmentId]);
-
-	return { assignment, isLoading, error, refetch: fetchAssignment };
+	return { assignment, isLoading, error };
 }
 
 export function useSubmitAssignment() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, isLoading, error } = useFrappePostCall(API_ENDPOINTS.SUBMIT_ASSIGNMENT);
 
 	const submitAssignment = async (assignmentId, submission, attachment) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const result = await callAPI("wg_lms.api.assignments.submit_assignment", {
-				assignment_id: assignmentId,
-				submission: submission,
-				attachment: attachment,
-			});
-			return { success: true, ...result };
-		} catch (err) {
-			setError(err.message || "Failed to submit assignment");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({ assignment_id: assignmentId, submission, attachment });
+		return { success: true, ...message };
 	};
 
-	return { submitAssignment, loading, error };
+	return { submitAssignment, isLoading, error };
 }
 
 export function useAssignmentSubmission(submissionId) {
-	const [submission, setSubmission] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
+	if (!submissionId) {
+		return { submission: null, isLoading: false, error: null };
+	}
 
-	useEffect(() => {
-		if (!submissionId) {
-			setIsLoading(false);
-			return;
+	const cacheKey = `assignment-submission-${submissionId}`;
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_SUBMISSION,
+		{ submission_id: submissionId },
+		cacheKey,
+		{
+			revalidateOnFocus: false,
 		}
+	);
 
-		const fetchSubmission = async () => {
-			try {
-				setIsLoading(true);
-				const data = await callAPI("wg_lms.api.assignments.get_submission", {
-					submission_id: submissionId,
-				});
-				setSubmission(data);
-			} catch (err) {
-				console.error("Failed to load submission:", err);
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const submission = data?.message || null;
 
-		fetchSubmission();
-	}, [submissionId]);
-
-	return { submission, isLoading };
+	return { submission, isLoading, error };
 }

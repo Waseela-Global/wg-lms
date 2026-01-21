@@ -116,8 +116,8 @@ export default function Dashboard() {
                 {stats.total_lessons_completed || 0} lessons
               </p>
             </div>
-            <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-12 h-12 bg-success-100 dark:bg-success-900/30 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-success-600 dark:text-success-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
@@ -219,40 +219,44 @@ export default function Dashboard() {
               </div>
             ) : courses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {courses.slice( 0, 4 ).map( ( enrollment ) => (
-                  <Link
-                    key={enrollment.name}
-                    to={`/courses/${enrollment.course}`}
-                    className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                  >
-                    {enrollment.image && (
-                      <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
-                        <img
-                          src={enrollment.image}
-                          alt={enrollment.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        />
-                      </div>
-                    )}
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                        {enrollment.title}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
-                        {enrollment.short_introduction}
-                      </p>
-                      <ProgressBar progress={enrollment.progress} className="mb-3" />
-                      {enrollment.is_completed && (
-                        <div className="flex items-center text-green-600 dark:text-green-400 text-sm font-semibold">
-                          <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          Completed
+                {courses.slice( 0, 4 ).map( ( enrollment ) => {
+                  const courseId = enrollment.course || enrollment.name
+                  if ( !courseId ) return null
+                  return (
+                    <Link
+                      key={enrollment.name || enrollment.course}
+                      to={`/courses/${courseId}`}
+                      className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                    >
+                      {enrollment.image && (
+                        <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
+                          <img
+                            src={enrollment.image}
+                            alt={enrollment.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
                         </div>
                       )}
-                    </div>
-                  </Link>
-                ) )}
+                      <div className="p-6">
+                        <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                          {enrollment.title}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                          {enrollment.short_introduction}
+                        </p>
+                        <ProgressBar progress={enrollment.progress} className="mb-3" />
+                        {!!enrollment.is_completed && (
+                          <div className="flex items-center text-success-600 dark:text-success-400 text-sm font-semibold">
+                            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            Completed
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                } )}
               </div>
             ) : (
               <EmptyState
@@ -360,8 +364,8 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {activities.map( ( activity, idx ) => (
                   <div key={idx} className="flex items-start space-x-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex-shrink-0 w-8 h-8 bg-success-100 dark:bg-success-900/30 rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-success-600 dark:text-success-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                     </div>
@@ -389,38 +393,42 @@ export default function Dashboard() {
                 Recommended for You
               </h3>
               <div className="space-y-4">
-                {recommendedCourses.map( ( course ) => (
-                  <Link
-                    key={course.name}
-                    to={`/courses/${course.name}`}
-                    className="block group"
-                  >
-                    <div className="flex items-start space-x-3">
-                      {course.image && (
-                        <img
-                          src={course.image}
-                          alt={course.title}
-                          className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
-                          {course.title}
-                        </p>
-                        {course.average_rating > 0 && (
-                          <div className="flex items-center mt-1">
-                            <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
-                            </svg>
-                            <span className="text-xs text-gray-600 dark:text-gray-400">
-                              {course.average_rating.toFixed( 1 )}
-                            </span>
-                          </div>
+                {recommendedCourses.map( ( course ) => {
+                  const courseId = course.name || course.course
+                  if ( !courseId ) return null
+                  return (
+                    <Link
+                      key={course.name || course.course}
+                      to={`/courses/${courseId}`}
+                      className="block group"
+                    >
+                      <div className="flex items-start space-x-3">
+                        {course.image && (
+                          <img
+                            src={course.image}
+                            alt={course.title}
+                            className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                          />
                         )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors line-clamp-2">
+                            {course.title}
+                          </p>
+                          {course.average_rating > 0 && (
+                            <div className="flex items-center mt-1">
+                              <svg className="w-3 h-3 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.538 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.783.57-1.838-.197-1.538-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                              </svg>
+                              <span className="text-xs text-gray-600 dark:text-gray-400">
+                                {course.average_rating.toFixed( 1 )}
+                              </span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ) )}
+                    </Link>
+                  )
+                } )}
               </div>
             </Card>
           )}

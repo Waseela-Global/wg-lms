@@ -67,56 +67,26 @@ export const API_ENDPOINTS = {
 	// Completion
 	CHECK_COMPLETION_STATUS: "wg_lms.api.completion.check_completion_status",
 	GET_COMPLETION_REQUIREMENTS: "wg_lms.api.completion.get_completion_requirements",
+
+	// Roles
+	GET_ROLES: "wg_lms.api.helpers.get_roles",
+	GET_DEPARTMENTS: "wg_lms.api.helpers.get_departments",
+	GET_USERS_FOR_ASSIGNMENT: "wg_lms.api.helpers.get_users_for_assignment",
 };
 
-let csrfPromise = null;
-
-async function getCSRFToken() {
-	const existing = window.csrf_token;
-	if (existing && typeof existing === "string" && !existing.includes("{{")) {
-		return existing;
+export function getCSRFToken() {
+	if (
+		typeof window !== "undefined" &&
+		window.csrf_token &&
+		typeof window.csrf_token === "string" &&
+		!window.csrf_token.includes("{{")
+	) {
+		return window.csrf_token;
 	}
-
-	if (!csrfPromise) {
-		csrfPromise = fetch("/api/method/frappe.sessions.get_csrf_token", {
-			method: "GET",
-			credentials: "include",
-		})
-			.then(async (res) => {
-				if (!res.ok) return null;
-				const data = await res.json().catch(() => null);
-				const token = data?.message?.csrf_token || data?.message || null;
-				if (token && typeof token === "string") {
-					window.csrf_token = token;
-					return token;
-				}
-				return null;
-			})
-			.catch(() => null);
-	}
-
-	return await csrfPromise;
+	return null;
 }
 
-// Helper function to call Frappe API
-export async function callAPI(method, args = {}) {
-	const csrf = await getCSRFToken();
-
-	const response = await fetch(`/api/method/${method}`, {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-			...(csrf ? { "X-Frappe-CSRF-Token": csrf } : {}),
-		},
-		credentials: "include",
-		body: JSON.stringify(args),
-	});
-
-	if (!response.ok) {
-		const error = await response.json().catch(() => ({}));
-		throw new Error(error.message || error._server_messages || "API call failed");
-	}
-
-	const data = await response.json();
-	return data.message;
+export function getCSRFHeaders() {
+	const token = getCSRFToken();
+	return token ? { "X-Frappe-CSRF-Token": token } : {};
 }

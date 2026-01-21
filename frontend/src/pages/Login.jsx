@@ -6,7 +6,7 @@ import { Button, Input, Alert } from '../components/FrappeUI'
 export default function Login() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { login, currentUser } = useFrappeAuth()
+  const { login, currentUser, isLoading: authLoading } = useFrappeAuth()
   const [ username, setUsername ] = React.useState( '' )
   const [ password, setPassword ] = React.useState( '' )
   const [ isLoading, setIsLoading ] = React.useState( false )
@@ -15,11 +15,11 @@ export default function Login() {
 
   // Check if already logged in via Frappe session
   React.useEffect( () => {
-    if ( currentUser && currentUser !== 'Guest' ) {
+    if ( !authLoading && currentUser && currentUser !== 'Guest' ) {
       const redirectTo = location.state?.from?.pathname || '/dashboard'
       navigate( redirectTo, { replace: true } )
     }
-  }, [ currentUser, navigate, location ] )
+  }, [ currentUser, authLoading, navigate, location ] )
 
   const handleSubmit = async ( e ) => {
     e.preventDefault()
@@ -27,15 +27,42 @@ export default function Login() {
     setIsLoading( true )
 
     try {
-      console.log( username, password )
-      await login( { username, password } )
+      if ( !username.trim() || !password.trim() ) {
+        setError( 'Please enter both username and password' )
+        setIsLoading( false )
+        return
+      }
+      console.log( username.trim(), password )
+      // Use login from frappe-react-sdk
+      await login( {
+        username: username.trim(),
+        password: password.trim(),
+      } )
+
+      // Wait a moment for session to be established
+      await new Promise( resolve => setTimeout( resolve, 100 ) )
+
+      // Force page reload to ensure session is fully established
       const redirectTo = location.state?.from?.pathname || '/dashboard'
-      navigate( redirectTo, { replace: true } )
+      window.location.href = `/lms${redirectTo}`
     } catch ( err ) {
-      setError( err.message || 'Invalid username or password' )
-    } finally {
+      console.error( 'Login error:', err )
+      const errorMessage = err?.message || err?.exc || err?.exception || 'Invalid username or password. Please try again.'
+      setError( errorMessage )
       setIsLoading( false )
     }
+  }
+
+  // Show loading while checking auth status
+  if ( authLoading ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-primary-200 border-t-primary-600"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    )
   }
 
   // If user is already logged in, show loading
@@ -51,7 +78,7 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Logo */}
         <div className="text-center mb-8">

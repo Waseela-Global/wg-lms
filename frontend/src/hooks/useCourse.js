@@ -2,7 +2,7 @@ import { useFrappeGetCall } from "frappe-react-sdk";
 import { API_ENDPOINTS } from "../utils/api";
 
 export function useCourses(params = {}) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		API_ENDPOINTS.GET_COURSES,
 		params,
 		"courses",
@@ -15,12 +15,11 @@ export function useCourses(params = {}) {
 		courses: data?.message || [],
 		error,
 		isLoading,
-		mutate,
 	};
 }
 
 export function useCourse(courseId) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		API_ENDPOINTS.GET_COURSE_DETAIL,
 		{ course: courseId },
 		courseId ? `course-${courseId}` : null,
@@ -34,12 +33,11 @@ export function useCourse(courseId) {
 		course: data?.message || null,
 		error,
 		isLoading,
-		mutate,
 	};
 }
 
 export function useCourseStudents(courseId) {
-	const { data, error, isLoading, mutate } = useFrappeGetCall(
+	const { data, error, isLoading } = useFrappeGetCall(
 		API_ENDPOINTS.GET_COURSE_STUDENTS,
 		{ course: courseId },
 		courseId ? `course-students-${courseId}` : null,
@@ -52,6 +50,5 @@ export function useCourseStudents(courseId) {
 		students: data?.message || [],
 		error,
 		isLoading,
-		mutate,
 	};
 }

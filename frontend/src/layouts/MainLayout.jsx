@@ -6,7 +6,7 @@ import { usePermissions } from '../hooks/usePermissions'
 import FloatingActionButton from '../components/FloatingActionButton'
 
 export default function MainLayout( { children } ) {
-  const { currentUser, logout } = useFrappeAuth()
+  const { currentUser } = useFrappeAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [ isMobileMenuOpen, setIsMobileMenuOpen ] = React.useState( false )
@@ -27,8 +27,35 @@ export default function MainLayout( { children } ) {
   }, [ isAdmin, canCreateCourse, canCreateBatch, permissionsLoading, profile ] )
 
   const handleLogout = async () => {
-    await logout()
-    navigate( '/login' )
+    try {
+      const csrfToken = window.csrf_token && typeof window.csrf_token === 'string' && !window.csrf_token.includes( '{{' )
+        ? window.csrf_token
+        : null
+
+      if ( csrfToken ) {
+        await fetch( '/api/method/wg_lms.api.auth.custom_web_logout', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Frappe-CSRF-Token': csrfToken,
+          },
+        } ).then( response => response.json() ).then( data => {
+          console.log( "Logout response:", data )
+          sessionStorage.clear()
+          localStorage.clear()
+          if ( data.message.redirect ) {
+            navigate( data.redirect )
+          }
+        } ).catch( error => {
+          console.error( "Logout error:", error )
+
+        } )
+      }
+    } catch ( error ) {
+      console.error( 'Logout error:', error )
+      window.location.href = '/lms/login'
+    }
   }
 
   const isGuest = !currentUser || currentUser === 'Guest'
@@ -70,8 +97,8 @@ export default function MainLayout( { children } ) {
                     key={link.to}
                     to={link.to}
                     className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${isActive( link.to )
-                        ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
-                        : 'text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                       }`}
                   >
                     {link.label}
@@ -116,6 +143,20 @@ export default function MainLayout( { children } ) {
                 </a>
               )}
 
+              {/* Admin Dashboard Link */}
+              {showAdminMenu && (
+                <Link
+                  to="/admin"
+                  className="hidden sm:flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition-colors"
+                  title="Admin Dashboard"
+                >
+                  <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Admin
+                </Link>
+              )}
+
               {/* Admin Menu */}
               {showAdminMenu && (
                 <div className="relative">
@@ -129,7 +170,7 @@ export default function MainLayout( { children } ) {
                       </svg>
                     }
                   >
-                    Admin
+                    More
                   </Button>
 
                   {isAdminMenuOpen && (
@@ -139,6 +180,20 @@ export default function MainLayout( { children } ) {
                         onClick={() => setIsAdminMenuOpen( false )}
                       />
                       <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 py-1">
+                        {isAdmin && (
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
+                            onClick={() => setIsAdminMenuOpen( false )}
+                          >
+                            <div className="flex items-center">
+                              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              Admin Dashboard
+                            </div>
+                          </Link>
+                        )}
                         {canCreateCourse && (
                           <Link
                             to="/admin/courses/new"
@@ -263,8 +318,8 @@ export default function MainLayout( { children } ) {
                   key={link.to}
                   to={link.to}
                   className={`block px-3 py-2 text-base font-medium rounded-md ${isActive( link.to )
-                      ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
-                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'text-primary-700 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   onClick={() => setIsMobileMenuOpen( false )}
                 >
@@ -279,6 +334,15 @@ export default function MainLayout( { children } ) {
                       <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Admin
                       </div>
+                      {isAdmin && (
+                        <Link
+                          to="/admin"
+                          className="block px-3 py-2 text-base font-semibold text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md border-b border-gray-200 dark:border-gray-700 mb-1"
+                          onClick={() => setIsMobileMenuOpen( false )}
+                        >
+                          Admin Dashboard
+                        </Link>
+                      )}
                       {canCreateCourse && (
                         <Link
                           to="/admin/courses/new"
@@ -313,16 +377,14 @@ export default function MainLayout( { children } ) {
                           >
                             Assign Training
                           </Link>
+                          <Link
+                            to="/admin/settings"
+                            className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                            onClick={() => setIsMobileMenuOpen( false )}
+                          >
+                            Settings
+                          </Link>
                         </>
-                      )}
-                      {isAdmin && (
-                        <Link
-                          to="/admin/settings"
-                          className="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                          onClick={() => setIsMobileMenuOpen( false )}
-                        >
-                          Settings
-                        </Link>
                       )}
                     </>
                   )}

@@ -12,7 +12,7 @@ class LMSCertificate(Document):
 			
 			# Check if renewal is required
 			if self.expiry_date:
-				self.renewal_required = getdate(self.expiry_date) < today()
+				self.renewal_required = getdate(self.expiry_date) < getdate(today())
 		else:
 			self.expiry_date = None
 			self.renewal_required = 0

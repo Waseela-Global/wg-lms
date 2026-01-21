@@ -1,143 +1,74 @@
-import { useState, useEffect } from "react";
-import { callAPI } from "../utils/api";
+import { useFrappeGetCall, useFrappePostCall } from "frappe-react-sdk";
+import { API_ENDPOINTS } from "../utils/api";
 
 export function useDiscussions(courseId, lessonId) {
-	const [discussions, setDiscussions] = useState([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
-
-	useEffect(() => {
-		const fetchDiscussions = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.discussions.get_discussions", {
-					course_id: courseId,
-					lesson_id: lessonId,
-				});
-				setDiscussions(data || []);
-			} catch (err) {
-				setError(err.message || "Failed to load discussions");
-				setDiscussions([]);
-			} finally {
-				setIsLoading(false);
-			}
-		};
-
-		fetchDiscussions();
-	}, [courseId, lessonId]);
-
-	const refetch = async () => {
-		try {
-			setIsLoading(true);
-			const data = await callAPI("wg_lms.api.discussions.get_discussions", {
-				course_id: courseId,
-				lesson_id: lessonId,
-			});
-			setDiscussions(data || []);
-		} catch (err) {
-			setError(err.message || "Failed to load discussions");
-		} finally {
-			setIsLoading(false);
+	const cacheKey = `discussions-${courseId || "all"}-${lessonId || "all"}`;
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_DISCUSSIONS,
+		{
+			course_id: courseId,
+			lesson_id: lessonId,
+		},
+		cacheKey,
+		{
+			revalidateOnFocus: false,
 		}
-	};
+	);
 
-	return { discussions, isLoading, error, refetch };
+	const discussions = data?.message || [];
+
+	return { discussions, isLoading, error };
 }
 
 export function useDiscussion(discussionId) {
-	const [discussion, setDiscussion] = useState(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [error, setError] = useState(null);
+	if (!discussionId) {
+		return { discussion: null, isLoading: false, error: null };
+	}
 
-	useEffect(() => {
-		if (!discussionId) {
-			setIsLoading(false);
-			return;
+	const cacheKey = `discussion-${discussionId}`;
+	const { data, isLoading, error } = useFrappeGetCall(
+		API_ENDPOINTS.GET_DISCUSSION,
+		{ discussion_id: discussionId },
+		cacheKey,
+		{
+			revalidateOnFocus: false,
 		}
+	);
 
-		const fetchDiscussion = async () => {
-			try {
-				setIsLoading(true);
-				setError(null);
-				const data = await callAPI("wg_lms.api.discussions.get_discussion", {
-					discussion_id: discussionId,
-				});
-				setDiscussion(data);
-			} catch (err) {
-				setError(err.message || "Failed to load discussion");
-			} finally {
-				setIsLoading(false);
-			}
-		};
+	const discussion = data?.message || null;
 
-		fetchDiscussion();
-	}, [discussionId]);
-
-	const refetch = async () => {
-		if (!discussionId) return;
-		try {
-			setIsLoading(true);
-			const data = await callAPI("wg_lms.api.discussions.get_discussion", {
-				discussion_id: discussionId,
-			});
-			setDiscussion(data);
-		} catch (err) {
-			setError(err.message || "Failed to load discussion");
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	return { discussion, isLoading, error, refetch };
+	return { discussion, isLoading, error };
 }
 
 export function useCreateDiscussion() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, isLoading, error } = useFrappePostCall(API_ENDPOINTS.CREATE_DISCUSSION);
 
 	const createDiscussion = async (courseId, lessonId, title, content) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const discussionId = await callAPI("wg_lms.api.discussions.create_discussion", {
-				course_id: courseId,
-				lesson_id: lessonId,
-				title: title,
-				content: content,
-			});
-			return { success: true, discussionId };
-		} catch (err) {
-			setError(err.message || "Failed to create discussion");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({
+			course_id: courseId,
+			lesson_id: lessonId,
+			title,
+			content,
+		});
+		const discussionId =
+			typeof message === "string"
+				? message
+				: message?.name || message?.discussion_id || message;
+		return { success: true, discussionId };
 	};
 
-	return { createDiscussion, loading, error };
+	return { createDiscussion, loading: isLoading, error };
 }
 
 export function useAddReply() {
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
+	const { call, isLoading, error } = useFrappePostCall(API_ENDPOINTS.ADD_REPLY);
 
 	const addReply = async (discussionId, content) => {
-		try {
-			setLoading(true);
-			setError(null);
-			const replyId = await callAPI("wg_lms.api.discussions.add_reply", {
-				discussion_id: discussionId,
-				content: content,
-			});
-			return { success: true, replyId };
-		} catch (err) {
-			setError(err.message || "Failed to add reply");
-			return { success: false, error: err.message };
-		} finally {
-			setLoading(false);
-		}
+		const { message } = await call({ discussion_id: discussionId, content });
+		const replyId =
+			typeof message === "string" ? message : message?.name || message?.reply_id || message;
+		return { success: true, replyId };
 	};
 
-	return { addReply, loading, error };
+	return { addReply, loading: isLoading, error };
 }

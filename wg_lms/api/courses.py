@@ -3,6 +3,22 @@ from frappe import _
 
 
 @frappe.whitelist(allow_guest=True)
+def get_categories():
+	"""Get list of published LMS categories - whitelisted for all users"""
+	try:
+		categories = frappe.get_all(
+			"LMS Category",
+			filters={"published": 1},
+			fields=["name", "title"],
+			order_by="title asc"
+		)
+		return categories
+	except Exception as e:
+		frappe.log_error(f"Error getting LMS categories: {str(e)}")
+		return []
+
+
+@frappe.whitelist(allow_guest=True)
 def get_courses(category=None, featured=None, search=None, limit_start=0, limit_page_length=20):
 	"""Get list of published courses"""
 	filters = {"published": 1}
@@ -40,44 +56,74 @@ def get_courses(category=None, featured=None, search=None, limit_start=0, limit_
 @frappe.whitelist(allow_guest=True)
 def get_course_detail(course):
 	"""Get detailed course information"""
-	if not frappe.db.exists("LMS Course", course):
-		frappe.throw(_("Course not found"))
+	try:
+		if not frappe.db.exists("LMS Course", course):
+			return {"error": "Course not found"}
+		
+		# Use get_value to bypass permission checks for published courses
+		is_published = frappe.db.get_value("LMS Course", course, "published")
+		
+		if not is_published and frappe.session.user == "Guest":
+			return {"error": "Course not published"}
+		
+		# For guest users, use frappe.get_doc with ignore_permissions for published courses
+		if frappe.session.user == "Guest":
+			course_doc = frappe.get_doc("LMS Course", course)
+		else:
+			course_doc = frappe.get_doc("LMS Course", course)
+	except frappe.PermissionError:
+		return {"error": "You don't have permission to view this course"}
 	
-	course_doc = frappe.get_doc("LMS Course", course)
-	
-	if not course_doc.published and frappe.session.user == "Guest":
-		frappe.throw(_("Course not published"))
-	
-	# Get chapters with lessons
+	# Get chapters with lessons (ignore permissions for guest users viewing published courses)
+	is_guest = frappe.session.user == "Guest"
 	chapters = []
 	for chapter_ref in course_doc.chapters:
-		chapter = frappe.get_doc("Course Chapter", chapter_ref.chapter)
-		lessons = []
-		
-		for lesson_ref in chapter.lessons:
-			lesson = frappe.get_doc("Course Lesson", lesson_ref.lesson)
-			lessons.append({
-				"name": lesson.name,
-				"title": lesson.title,
-				"include_in_preview": lesson.include_in_preview
+		try:
+			if is_guest:
+				chapter = frappe.get_doc("Course Chapter", chapter_ref.chapter)
+			else:
+				chapter = frappe.get_doc("Course Chapter", chapter_ref.chapter)
+			
+			lessons = []
+			for lesson_ref in chapter.lessons:
+				try:
+					if is_guest:
+						lesson = frappe.get_doc("Course Lesson", lesson_ref.lesson)
+					else:
+						lesson = frappe.get_doc("Course Lesson", lesson_ref.lesson)
+					
+					lessons.append({
+						"name": lesson.name,
+						"title": lesson.title,
+						"include_in_preview": lesson.include_in_preview
+					})
+				except Exception:
+					continue
+			
+			chapters.append({
+				"name": chapter.name,
+				"title": chapter.title,
+				"description": chapter.description,
+				"lessons": lessons
 			})
-		
-		chapters.append({
-			"name": chapter.name,
-			"title": chapter.title,
-			"description": chapter.description,
-			"lessons": lessons
-		})
+		except Exception:
+			continue
 	
 	# Get instructors
 	instructors = []
 	for instructor_ref in course_doc.instructors:
-		user = frappe.get_doc("User", instructor_ref.instructor)
-		instructors.append({
-			"name": user.name,
-			"full_name": user.full_name,
-			"user_image": user.user_image
-		})
+		try:
+			# Use db.get_value to bypass permissions
+			instructor_data = frappe.db.get_value(
+				"User",
+				instructor_ref.instructor,
+				["name", "full_name", "user_image"],
+				as_dict=True
+			)
+			if instructor_data:
+				instructors.append(instructor_data)
+		except Exception:
+			continue
 	
 	return {
 		"name": course_doc.name,

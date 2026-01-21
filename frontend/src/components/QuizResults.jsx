@@ -14,10 +14,10 @@ export default function QuizResults( { attempt, quiz, onRetake } ) {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="card p-8 text-center mb-6">
-        <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${attempt.is_passed ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
+        <div className={`w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center ${attempt.is_passed ? 'bg-success-100 dark:bg-success-900/30' : 'bg-red-100 dark:bg-red-900/30'
           }`}>
           {attempt.is_passed ? (
-            <svg className="w-12 h-12 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-12 h-12 text-success-600 dark:text-success-400" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
           ) : (
@@ -27,7 +27,7 @@ export default function QuizResults( { attempt, quiz, onRetake } ) {
           )}
         </div>
 
-        <h2 className={`text-3xl font-bold mb-2 ${attempt.is_passed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+        <h2 className={`text-3xl font-bold mb-2 ${attempt.is_passed ? 'text-success-600 dark:text-success-400' : 'text-red-600 dark:text-red-400'
           }`}>
           {attempt.is_passed ? 'Congratulations!' : 'Try Again'}
         </h2>
@@ -70,7 +70,7 @@ export default function QuizResults( { attempt, quiz, onRetake } ) {
           )}
           {quiz.course && (
             <button
-              onClick={() => navigate( `/courses/${quiz.course}` )}
+              onClick={() => navigate( `/courses/${quiz.course || ''}` )}
               className="btn btn-secondary"
             >
               Back to Course

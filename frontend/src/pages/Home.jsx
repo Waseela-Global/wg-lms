@@ -6,34 +6,37 @@ import CourseCard from '../components/CourseCard'
 import { Spinner, EmptyState, Button, Card } from '../components/FrappeUI'
 
 export default function Home() {
-  const { courses: featuredCourses, isLoading } = useCourses({ featured: 1, limit_page_length: 6 })
+  const { courses: featuredCourses, isLoading } = useCourses( { featured: 1, limit_page_length: 6 } )
   const { canCreateCourse, canCreateBatch, isAdmin, isInstructor } = usePermissions()
-  
+
   return (
     <div className="min-h-screen">
       {/* Hero Section - Matching Waseela.global theme */}
       <section className="relative bg-gradient-to-br from-primary-700 via-primary-800 to-primary-900 text-white overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }} />
+        {/* Background Image */}
+        <div className="absolute inset-0 opacity-50">
+          <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: 'url("/background.webp")',
+            }}
+          />
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32">
           <div className="text-center">
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
-                      <span className="block">Waseela</span>
-                      <span className="block bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent">
-                        Learning Platform
-                      </span>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 tracking-tight">
+              <span className="block">Waseela</span>
+              <span className="block bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent">
+                Learning Platform
+              </span>
             </h1>
-                    <p className="mt-6 max-w-3xl mx-auto text-xl sm:text-2xl text-primary-100 leading-relaxed">
-                      Internal learning and development platform for Waseela team
+            <p className="mt-6 max-w-3xl mx-auto text-xl sm:text-2xl text-primary-100 leading-relaxed">
+              Internal learning and development platform for Waseela team
             </p>
             <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-              <Link 
-                to="/courses" 
+              <Link
+                to="/courses"
                 className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-semibold rounded-xl text-primary-900 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 Browse Courses
@@ -41,14 +44,14 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
-              <Link 
-                to="/batches" 
+              <Link
+                to="/batches"
                 className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-base font-semibold rounded-xl text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200"
               >
                 View Batches
               </Link>
-              {(canCreateCourse || canCreateBatch) && (
-                <Link 
+              {( canCreateCourse || canCreateBatch ) && (
+                <Link
                   to={canCreateCourse ? "/admin/courses/new" : "/admin/batches/new"}
                   className="inline-flex items-center justify-center px-8 py-4 border-2 border-white/50 text-base font-semibold rounded-xl text-white bg-white/10 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-200 backdrop-blur-sm shadow-lg hover:shadow-xl"
                 >
@@ -61,7 +64,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        
+
         {/* Decorative bottom curve */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg className="w-full h-12 text-gray-50 dark:text-gray-900" fill="currentColor" viewBox="0 0 1200 120" preserveAspectRatio="none">
@@ -71,20 +74,20 @@ export default function Home() {
           </svg>
         </div>
       </section>
-      
+
       {/* Featured Courses */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12">
           <div>
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Featured Courses
-          </h2>
+              Featured Courses
+            </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Handpicked courses to get you started
             </p>
           </div>
-          <Link 
-            to="/courses" 
+          <Link
+            to="/courses"
             className="mt-4 sm:mt-0 inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold group"
           >
             View All Courses
@@ -93,16 +96,16 @@ export default function Home() {
             </svg>
           </Link>
         </div>
-        
+
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Spinner size="lg" />
           </div>
         ) : featuredCourses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-            {featuredCourses.map((course) => (
+            {featuredCourses.map( ( course ) => (
               <CourseCard key={course.name} course={course} />
-            ))}
+            ) )}
           </div>
         ) : (
           <EmptyState
@@ -115,20 +118,20 @@ export default function Home() {
           />
         )}
       </section>
-      
+
       {/* Quick Actions for Content Creators */}
-      {(canCreateCourse || canCreateBatch || isAdmin || isInstructor) && (
+      {( canCreateCourse || canCreateBatch || isAdmin || isInstructor ) && (
         <section className="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 py-16 sm:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Content Management
-          </h2>
+              </h2>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
                 Create and manage courses, batches, and learning content
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {canCreateCourse && (
                 <Card className="p-6 hover:shadow-xl transition-all group cursor-pointer">
@@ -152,7 +155,7 @@ export default function Home() {
                   </Link>
                 </Card>
               )}
-              
+
               {canCreateBatch && (
                 <Card className="p-6 hover:shadow-xl transition-all group cursor-pointer">
                   <Link to="/admin/batches/new" className="block">
@@ -175,8 +178,8 @@ export default function Home() {
                   </Link>
                 </Card>
               )}
-              
-              {(isAdmin || isInstructor) && (
+
+              {( isAdmin || isInstructor ) && (
                 <Card className="p-6 hover:shadow-xl transition-all group cursor-pointer">
                   <Link to="/dashboard" className="block">
                     <div className="flex items-start justify-between mb-4">
@@ -187,8 +190,8 @@ export default function Home() {
                       </div>
                       <svg className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
+                      </svg>
+                    </div>
                     <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
                       View Dashboard
                     </h3>
@@ -212,9 +215,9 @@ export default function Home() {
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Everything you need to succeed in your learning journey
-              </p>
-            </div>
-            
+            </p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {[
               {
@@ -238,8 +241,8 @@ export default function Home() {
                 title: 'Certificates',
                 description: 'Earn verified certificates upon completion to showcase your achievements and skills'
               }
-            ].map((feature, index) => (
-              <div 
+            ].map( ( feature, index ) => (
+              <div
                 key={index}
                 className="relative group p-8 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700 transition-all duration-300 hover:shadow-xl"
               >
@@ -248,17 +251,17 @@ export default function Home() {
                   <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       {feature.icon}
-                </svg>
-              </div>
+                    </svg>
+                  </div>
                   <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-gray-100">
                     {feature.title}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                     {feature.description}
-              </p>
-            </div>
+                  </p>
+                </div>
               </div>
-            ))}
+            ) )}
           </div>
         </div>
       </section>

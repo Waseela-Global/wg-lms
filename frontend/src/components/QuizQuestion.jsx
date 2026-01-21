@@ -46,11 +46,11 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
               key={option.name}
               className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-colors ${showResults
                   ? isCorrect( option.name )
-                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                    ? 'border-success-500 bg-success-50 dark:bg-success-900/20'
                     : isWrong( option.name )
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : isCorrectAnswer( option.name )
-                        ? 'border-green-300 bg-green-50 dark:bg-green-900/10'
+                        ? 'border-success-300 bg-success-50 dark:bg-success-900/10'
                         : 'border-gray-200 dark:border-gray-700'
                   : userAnswer === option.name
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
@@ -68,7 +68,7 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
               />
               <span className="flex-1 text-gray-900 dark:text-gray-100">{option.option}</span>
               {showResults && isCorrectAnswer( option.name ) && (
-                <svg className="w-5 h-5 text-green-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-success-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}
@@ -87,8 +87,8 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
                 className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-colors ${showResults
                     ? isCorrectAnswer( option.name )
                       ? isSelected
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                        : 'border-green-300 bg-green-50 dark:bg-green-900/10'
+                        ? 'border-success-500 bg-success-50 dark:bg-success-900/20'
+                        : 'border-success-300 bg-success-50 dark:bg-success-900/10'
                       : isSelected
                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                         : 'border-gray-200 dark:border-gray-700'
@@ -115,7 +115,7 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
                 />
                 <span className="flex-1 text-gray-900 dark:text-gray-100">{option.option}</span>
                 {showResults && isCorrectAnswer( option.name ) && (
-                  <svg className="w-5 h-5 text-green-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-success-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 )}
@@ -132,11 +132,11 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
               key={option.name}
               className={`flex items-start p-4 rounded-lg border-2 cursor-pointer transition-colors ${showResults
                   ? isCorrect( option.name )
-                    ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                    ? 'border-success-500 bg-success-50 dark:bg-success-900/20'
                     : isWrong( option.name )
                       ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                       : isCorrectAnswer( option.name )
-                        ? 'border-green-300 bg-green-50 dark:bg-green-900/10'
+                        ? 'border-success-300 bg-success-50 dark:bg-success-900/10'
                         : 'border-gray-200 dark:border-gray-700'
                   : userAnswer === option.name
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
@@ -154,7 +154,7 @@ export default function QuizQuestion( { question, questionNumber, userAnswer, on
               />
               <span className="flex-1 text-gray-900 dark:text-gray-100">{option.option}</span>
               {showResults && isCorrectAnswer( option.name ) && (
-                <svg className="w-5 h-5 text-green-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-success-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}

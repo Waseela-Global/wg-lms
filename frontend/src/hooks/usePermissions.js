@@ -1,13 +1,22 @@
-import { useFrappeGetCall } from "frappe-react-sdk";
+import { useFrappeGetCall, useFrappeAuth } from "frappe-react-sdk";
 
 export function usePermissions() {
-	const {
-		data: profile,
-		isLoading,
-		error,
-	} = useFrappeGetCall("wg_lms.api.auth.get_user_lms_profile", {}, "user-lms-profile", {
-		revalidateOnFocus: false,
-	});
+	const { currentUser, isLoading: authLoading } = useFrappeAuth();
+	
+	// Only call API if user is authenticated
+	const shouldFetch = currentUser && currentUser !== "Guest";
+	
+	const { data, isLoading, error } = useFrappeGetCall(
+		"wg_lms.api.auth.get_user_lms_profile",
+		shouldFetch ? {} : null,
+		shouldFetch ? "user-lms-profile" : null,
+		{
+			revalidateOnFocus: false,
+			shouldFetch: shouldFetch,
+		}
+	);
+
+	const profile = shouldFetch ? (data?.message || data || null) : null;
 
 	// Check roles directly from profile
 	const roles = profile?.roles || [];
@@ -34,15 +43,15 @@ export function usePermissions() {
 	}
 
 	return {
-		isLoading,
-		error,
-		isAdmin,
-		isInstructor,
-		isStudent,
-		isCourseCreator,
-		canCreateCourse,
-		canCreateBatch,
-		roles,
-		profile,
+		isLoading: authLoading || (shouldFetch ? isLoading : false),
+		error: shouldFetch ? error : null,
+		isAdmin: shouldFetch ? isAdmin : false,
+		isInstructor: shouldFetch ? isInstructor : false,
+		isStudent: shouldFetch ? isStudent : false,
+		isCourseCreator: shouldFetch ? isCourseCreator : false,
+		canCreateCourse: shouldFetch ? canCreateCourse : false,
+		canCreateBatch: shouldFetch ? canCreateBatch : false,
+		roles: shouldFetch ? roles : [],
+		profile: shouldFetch ? profile : null,
 	};
 }
