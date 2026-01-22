@@ -213,7 +213,7 @@ export default function Lesson() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                  {lesson.title}
+                  {lesson?.title || ''}
                 </h1>
                 {course && ( course.name || course.course ) && (
                   <Link
@@ -273,12 +273,12 @@ export default function Lesson() {
           {/* Lesson Content */}
           <div className="card p-6 sm:p-8 mb-6">
             <div className="prose dark:prose-invert max-w-none">
-              <LessonContent content={lesson.content} youtubeUrl={lesson.youtube_url} />
+              <LessonContent content={lesson?.content} youtubeUrl={lesson?.youtube_url} />
             </div>
           </div>
 
           {/* Instructor Notes (for instructors/admins only) */}
-          {lesson.instructor_notes && ( isAdmin || isInstructor ) && (
+          {lesson?.instructor_notes && ( isAdmin || isInstructor ) && (
             <div className="card p-6 mb-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700">
               <div className="flex items-start gap-4 mb-4">
                 <svg className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -298,7 +298,7 @@ export default function Lesson() {
                   </p>
                   <div className="prose dark:prose-invert max-w-none text-sm">
                     <ReactMarkdown remarkPlugins={[ remarkGfm ]}>
-                      {lesson.instructor_notes}
+                      {lesson?.instructor_notes || ''}
                     </ReactMarkdown>
                   </div>
                 </div>
@@ -307,13 +307,13 @@ export default function Lesson() {
           )}
 
           {/* Quiz/Assignment Links */}
-          {( lesson.quiz_id || lesson.assignment_id ) && (
+          {( lesson?.quiz_id || lesson?.assignment_id ) && (
             <div className="card p-6 mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                 Assessments
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {lesson.quiz_id && (
+                {lesson?.quiz_id && (
                   <div className={`card p-5 ${isViewOnly ? 'opacity-60' : 'hover:shadow-md transition-shadow cursor-pointer'}`}>
                     <div className="flex items-start gap-4">
                       <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${isViewOnly ? 'bg-gray-200 dark:bg-gray-600' : 'bg-secondary-100 dark:bg-secondary-900/30'}`}>
@@ -332,7 +332,7 @@ export default function Lesson() {
                           </span>
                         ) : (
                           <button
-                            onClick={() => navigate( `/quiz/${lesson.quiz_id || ''}` )}
+                            onClick={() => navigate( `/quiz/${lesson?.quiz_id || ''}` )}
                             className="btn btn-primary btn-sm"
                           >
                             Take Quiz →
@@ -342,7 +342,7 @@ export default function Lesson() {
                     </div>
                   </div>
                 )}
-                {lesson.assignment_id && (
+                {lesson?.assignment_id && (
                   <div className={`card p-5 ${isViewOnly ? 'opacity-60' : 'hover:shadow-md transition-shadow cursor-pointer'}`}>
                     <div className="flex items-start gap-4">
                       <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${isViewOnly ? 'bg-gray-200 dark:bg-gray-600' : 'bg-success-100 dark:bg-success-900/30'}`}>
@@ -361,7 +361,7 @@ export default function Lesson() {
                           </span>
                         ) : (
                           <button
-                            onClick={() => navigate( `/assignment/${lesson.assignment_id || ''}` )}
+                            onClick={() => navigate( `/assignment/${lesson?.assignment_id || ''}` )}
                             className="btn btn-primary btn-sm"
                           >
                             View Assignment →
@@ -380,7 +380,7 @@ export default function Lesson() {
             <div className="flex-1">
               {prev ? (
                 <Link
-                  to={`/lesson/${prev.name || ''}`}
+                  to={`/lesson/${prev?.name || ''}`}
                   className="group flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                 >
                   <svg className="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -388,7 +388,7 @@ export default function Lesson() {
                   </svg>
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">Previous</div>
-                    <div className="font-medium">{prev.title}</div>
+                    <div className="font-medium">{prev?.title || ''}</div>
                   </div>
                 </Link>
               ) : (
@@ -436,12 +436,12 @@ export default function Lesson() {
             <div className="flex-1 text-right">
               {next ? (
                 <Link
-                  to={`/lesson/${next.name || ''}`}
+                  to={`/lesson/${next?.name || ''}`}
                   className="group flex items-center justify-end text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
                 >
                   <div className="text-right">
                     <div className="text-xs text-gray-500 dark:text-gray-400">Next</div>
-                    <div className="font-medium">{next.title}</div>
+                    <div className="font-medium">{next?.title || ''}</div>
                   </div>
                   <svg className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -471,19 +471,19 @@ export default function Lesson() {
               )}
               <div className="space-y-1 max-h-[600px] overflow-y-auto">
                 {course.chapters.map( ( chapter, chapterIndex ) => (
-                  <div key={chapter.name} className="mb-4">
+                  <div key={chapter?.name || chapterIndex} className="mb-4">
                     <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {chapterIndex + 1}. {chapter.title}
+                      {chapterIndex + 1}. {chapter?.title || ''}
                     </div>
                     {chapter.lessons && Array.isArray( chapter.lessons ) && (
                       <div className="space-y-1 ml-4">
                         {chapter.lessons.map( ( l, lessonIndex ) => {
-                          const isCurrent = l.name === lessonId
-                          const isComplete = progress?.some( p => p.lesson === l.name && p.is_complete )
+                          const isCurrent = l?.name === lessonId
+                          const isComplete = Array.isArray( progress ) && progress.some( p => p?.lesson === l?.name && p?.is_complete )
                           return (
                             <Link
-                              key={l.name}
-                              to={`/lesson/${l.name || ''}`}
+                              key={l?.name || lessonIndex}
+                              to={`/lesson/${l?.name || ''}`}
                               className={`block text-sm py-2 px-3 rounded-lg transition-colors ${isCurrent
                                 ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200 font-medium'
                                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
@@ -499,7 +499,7 @@ export default function Lesson() {
                                     {chapterIndex + 1}.{lessonIndex + 1}
                                   </span>
                                 )}
-                                <span className="line-clamp-1">{l.title}</span>
+                                <span className="line-clamp-1">{l?.title || ''}</span>
                               </div>
                             </Link>
                           )
@@ -516,3 +516,4 @@ export default function Lesson() {
     </div>
   )
 }
+

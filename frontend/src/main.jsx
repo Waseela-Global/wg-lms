@@ -48,19 +48,19 @@ if ( import.meta.env.DEV && !window.csrf_token ) {
 const root = ReactDOM.createRoot( document.getElementById( 'root' ) )
 
 root.render(
-	// <React.StrictMode>
-	<FrappeProvider
-		url={window.location.origin}
-		socketPort={undefined}
-		enableSocket={false}
-		siteName={window.frappe?.boot?.site_name || window.site_name}
-		tokenParams={{
-			useToken: true,
-			token: getCSRFToken,
-			type: "token",
-		}}
-	>
-		<App />
-	</FrappeProvider>
-	// </React.StrictMode>
+	<React.StrictMode>
+		<FrappeProvider
+			url={window.location.origin}
+			socketPort={undefined}
+			enableSocket={false}
+			siteName={window.frappe?.boot?.site_name || window.site_name}
+			tokenParams={{
+				useToken: true,
+				token: getCSRFToken,
+				type: "token",
+			}}
+		>
+			<App />
+		</FrappeProvider>
+	</React.StrictMode>
 )
