@@ -40,7 +40,6 @@
    "fieldname": "passing_percentage",
    "fieldtype": "Int",
    "label": "Passing Percentage",
-   "reqd": 1,
    "default": "70"
   },
   {
@@ -51,7 +50,7 @@
   },
   {
    "fieldname": "duration",
-   "fieldtype": "Int",
+   "fieldtype": "Data",
    "label": "Duration (minutes)"
   },
   {
