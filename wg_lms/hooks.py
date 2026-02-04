@@ -33,7 +33,7 @@ website_route_rules = [
 app_include_css = "/assets/wg_lms/css/wg_lms.css"
 app_include_js = [
 	"/assets/wg_lms/js/wg_lms.js",
-	"/assets/wg_lms/js/contextual_learning.js"
+	# "/assets/wg_lms/js/contextual_learning.js"
 ]
 
 # include js, css files in header of web template
