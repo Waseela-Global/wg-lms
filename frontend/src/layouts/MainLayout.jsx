@@ -87,7 +87,7 @@ export default function MainLayout( { children } ) {
                   </svg>
                 </div>
                 <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  LMS
+                  Waseela LMS
                 </span>
               </Link>
 

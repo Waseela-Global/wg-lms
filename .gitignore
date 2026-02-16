@@ -76,6 +76,7 @@ wg_lms/public/css/*.css
 wg_lms/public/js/*.js
 !wg_lms/public/css/wg_lms.css
 !wg_lms/public/js/wg_lms.js
+wg_lms/public/node_modules/
 
 # Frontend
 frontend/node_modules/

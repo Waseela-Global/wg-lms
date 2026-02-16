@@ -1,0 +1,13 @@
+{
+  "name": "wg_lms",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Waseela Learning Management System",
+  "scripts": {
+    "postinstall": "cd frontend && npm install",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "build:prod": "cd frontend && npm run build:prod"
+  }
+}
+
