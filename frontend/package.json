@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/assets/wg_lms/frontend/ && npm run copy-html-entry",
+    "build": "vite build --base=/assets/wg_lms/frontend/ && yarn copy-html-entry",
+    "build:prod": "vite build --base=/assets/wg_lms/frontend/ --mode production && yarn copy-html-entry",
     "preview": "vite preview",
-    "copy-html-entry": "cp ../wg_lms/public/frontend/index.html ../wg_lms/www/lms.html"
+    "copy-html-entry": "test -f ../wg_lms/public/frontend/index.html && cp ../wg_lms/public/frontend/index.html ../wg_lms/www/lms.html || echo 'HTML file not found, skipping copy'"
   },
   "dependencies": {
     "react": "^18.2.0",

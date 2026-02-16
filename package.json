@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "description": "Waseela Learning Management System",
+  "license": "MIT",
+  "aworkspaces": ["frontend"],
   "scripts": {
-    "postinstall": "cd frontend && npm install",
-    "dev": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
-    "build:prod": "cd frontend && npm run build:prod"
+    "postinstall": "yarn install-frontend-deps || echo 'Frontend dependencies installation skipped'",
+    "install-frontend-deps": "cd frontend && yarn install --check-files",
+    "dev": "cd frontend && yarn dev",
+    "build": "cd frontend && yarn build",
+    "build:prod": "cd frontend && yarn build:prod"
   }
 }
-
